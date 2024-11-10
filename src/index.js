@@ -62,12 +62,9 @@ export function resolve_ast(ast) {
 
 				// @layer first, second;
 				if (node.block === null) {
-					layer_name
-						.split(',')
-						.map((name) => name.trim())
-						.forEach((name) => {
-							list.push([...resolve_parent_tree(ast, node), name])
-						})
+					for (let name of layer_name.split(',')) {
+						list.push([...resolve_parent_tree(ast, node), name.trim()])
+					}
 
 					return this.skip
 				}
