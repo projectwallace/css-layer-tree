@@ -1,6 +1,5 @@
 import { resolve } from "path"
 import { defineConfig } from "vite"
-import dts from "vite-plugin-dts"
 import { codecovVitePlugin } from "@codecov/vite-plugin"
 
 export default defineConfig({
@@ -24,10 +23,6 @@ export default defineConfig({
     },
   },
   plugins: [
-    dts({
-      tsconfigPath: "./tsconfig.json",
-      rollupTypes: true,
-    }),
     codecovVitePlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
       bundleName: "cssLayerTree",
