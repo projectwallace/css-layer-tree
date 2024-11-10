@@ -2,8 +2,8 @@ import * as csstree from 'css-tree'
 
 /**
  * Get the parent Atrule for `childNode`
- * @param {CssNode} ast The full CSS AST to traverse again top-down
- * @param {Atrule} childNode The Atrule we want to get the potential parent Atrule for
+ * @param {import('css-tree').CssNode} ast The AST to search in
+ * @param {import('css-tree').Atrule} childNode The Atrule we want to get the potential parent Atrule for
  */
 function get_parent_rule(ast, childNode) {
 	let parent
