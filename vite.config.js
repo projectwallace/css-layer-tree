@@ -6,9 +6,9 @@ import { codecovVitePlugin } from "@codecov/vite-plugin"
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "index.js"),
-      name: "cssLayers",
-      fileName: "css-layers",
+      entry: resolve(__dirname, "src/index.js"),
+      name: "cssLayerTree",
+      fileName: "css-layer-tree",
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
@@ -17,10 +17,13 @@ export default defineConfig({
     },
   },
   plugins: [
-    dts(),
+    dts({
+      tsconfigPath: "./tsconfig.json",
+      rollupTypes: true,
+    }),
     codecovVitePlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: "cssLayers",
+      bundleName: "cssLayerTree",
       uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
