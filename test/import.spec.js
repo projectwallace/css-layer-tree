@@ -4,19 +4,19 @@ import { get_tree } from '../src/index.js'
 
 test('@import url() layer', () => {
 	let actual = get_tree('@import url("foo.css") layer;')
-	let expected = [
-		{
-			name: '<anonymous>',
-			children: []
-		}
-	]
+	let expected = [{
+		name: '__anonymous-1__',
+		locations: [{ line: 1, column: 1, start: 0, end: 29 }],
+		children: []
+	}]
 	assert.equal(actual, expected)
 })
 
 test('@import url() LAYER', () => {
 	let actual = get_tree('@import url("foo.css") LAYER;')
 	let expected = [{
-		"name": "<anonymous>",
+		"name": "__anonymous-1__",
+		locations: [{ line: 1, column: 1, start: 0, end: 29 }],
 		"children": []
 	}]
 	assert.equal(actual, expected)
@@ -25,7 +25,8 @@ test('@import url() LAYER', () => {
 test('@import url() layer()', () => {
 	let actual = get_tree('@import url("foo.css") layer();')
 	let expected = [{
-		name: '<anonymous>',
+		name: '__anonymous-1__',
+		locations: [{ line: 1, column: 1, start: 0, end: 31 }],
 		children: []
 	}]
 	assert.equal(actual, expected)
@@ -34,7 +35,8 @@ test('@import url() layer()', () => {
 test('@import url() LAYER()', () => {
 	let actual = get_tree('@import url("foo.css") LAYER();')
 	let expected = [{
-		name: '<anonymous>',
+		name: '__anonymous-1__',
+		locations: [{ line: 1, column: 1, start: 0, end: 31 }],
 		children: []
 	}]
 	assert.equal(actual, expected)
@@ -44,6 +46,7 @@ test('@import url() layer(named)', () => {
 	let actual = get_tree('@import url("foo.css") layer(named);')
 	let expected = [{
 		name: 'named',
+		locations: [{ line: 1, column: 1, start: 0, end: 36 }],
 		children: []
 	}]
 	assert.equal(actual, expected)
@@ -53,6 +56,7 @@ test('@import url() LAYER(named)', () => {
 	let actual = get_tree('@import url("foo.css") LAYER(named);')
 	let expected = [{
 		name: 'named',
+		locations: [{ line: 1, column: 1, start: 0, end: 36 }],
 		children: []
 	}]
 	assert.equal(actual, expected)
@@ -62,8 +66,10 @@ test('@import url() layer(named.nested)', () => {
 	let actual = get_tree('@import url("foo.css") layer(named.nested);')
 	let expected = [{
 		name: 'named',
+		locations: [{ line: 1, column: 1, start: 0, end: 43 }],
 		children: [{
 			name: 'nested',
+			locations: [{ line: 1, column: 1, start: 0, end: 43 }],
 			children: []
 		}]
 	}]
@@ -74,20 +80,24 @@ test('@import url() layer(named.nested     )', () => {
 	let actual = get_tree('@import url("foo.css") layer(named.nested     );')
 	let expected = [{
 		name: 'named',
+		locations: [{ line: 1, column: 1, start: 0, end: 48 }],
 		children: [{
 			name: 'nested',
+			locations: [{ line: 1, column: 1, start: 0, end: 48 }],
 			children: []
 		}]
 	}]
 	assert.equal(actual, expected)
 })
 
-test('@import url() layer(/* test */named.nested)', () => {
+test('@import url() layer(/* test */named.nested     )', () => {
 	let actual = get_tree('@import url("foo.css") layer(/* test */named.nested     );')
 	let expected = [{
 		name: 'named',
+		locations: [{ line: 1, column: 1, start: 0, end: 58 }],
 		children: [{
 			name: 'nested',
+			locations: [{ line: 1, column: 1, start: 0, end: 58 }],
 			children: []
 		}]
 	}]

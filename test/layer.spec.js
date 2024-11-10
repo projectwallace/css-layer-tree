@@ -6,8 +6,9 @@ test('single anonymous layer without body', () => {
 	let actual = get_tree('@layer;')
 	let expected = [
 		{
-			name: '<anonymous>',
+			name: '__anonymous-1__',
 			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 7 }]
 		},
 	]
 	assert.equal(actual, expected)
@@ -17,8 +18,9 @@ test('single anonymous layer with body', () => {
 	let actual = get_tree('@layer {}')
 	let expected = [
 		{
-			name: '<anonymous>',
+			name: '__anonymous-1__',
 			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 9 }]
 		},
 	]
 	assert.equal(actual, expected)
@@ -30,6 +32,7 @@ test('single named layer without body', () => {
 		{
 			name: 'first',
 			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 13 }]
 		},
 	]
 	assert.equal(actual, expected)
@@ -41,21 +44,42 @@ test('single named layer with body', () => {
 		{
 			name: 'first',
 			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 15 }]
 		},
 	]
 	assert.equal(actual, expected)
 })
 
 test('multiple named layers in one line', () => {
-	let actual = get_tree('@layer first, second;')
+	let actual = get_tree(`@layer first, second;`)
 	let expected = [
 		{
 			name: 'first',
 			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 21 }]
 		},
 		{
 			name: 'second',
 			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 21 }]
+		},
+	]
+	assert.equal(actual, expected)
+})
+
+test('repeated use of the same layer name', () => {
+	let actual = get_tree(`
+		@layer first {}
+		@layer first {}
+	`)
+	let expected = [
+		{
+			name: 'first',
+			children: [],
+			locations: [
+				{ line: 2, column: 3, start: 3, end: 18 },
+				{ line: 3, column: 3, start: 21, end: 36 }
+			]
 		},
 	]
 	assert.equal(actual, expected)
@@ -64,16 +88,33 @@ test('multiple named layers in one line', () => {
 test('nested layers', () => {
 	let actual = get_tree(`
 		@layer first {
-			@layer second {}
+			@layer second {
+				@layer third {}
+				@media all {}
+				@layer fourth {}
+			}
 		}
 	`)
 	let expected = [
 		{
 			name: 'first',
+			locations: [{ line: 2, column: 3, start: 3, end: 104 }],
 			children: [
 				{
 					name: 'second',
-					children: [],
+					locations: [{ line: 3, column: 4, start: 21, end: 100 }],
+					children: [
+						{
+							name: 'third',
+							locations: [{ line: 4, column: 5, start: 41, end: 56 }],
+							children: [],
+						},
+						{
+							name: 'fourth',
+							locations: [{ line: 6, column: 5, start: 79, end: 95 }],
+							children: [],
+						},
+					],
 				},
 			],
 		},
@@ -81,7 +122,7 @@ test('nested layers', () => {
 	assert.equal(actual, expected)
 })
 
-test.skip('nested layers with anonymous layers', () => {
+test('nested layers with anonymous layers', () => {
 	let actual = get_tree(`
 		@layer {
 			@layer {}
@@ -89,11 +130,13 @@ test.skip('nested layers with anonymous layers', () => {
 	`)
 	let expected = [
 		{
-			name: '<anonymous>',
+			name: '__anonymous-1__',
+			locations: [{ line: 2, column: 3, start: 3, end: 28 }],
 			children: [
 				{
-					name: '<anonymous>',
+					name: '__anonymous-2__',
 					children: [],
+					locations: [{ line: 3, column: 4, start: 15, end: 24 }],
 				},
 			],
 		},
@@ -101,7 +144,7 @@ test.skip('nested layers with anonymous layers', () => {
 	assert.equal(actual, expected)
 })
 
-test.skip('nested layers with anonymous layers and duplicate names', () => {
+test('nested layers with anonymous layers and duplicate names', () => {
 	let actual = get_tree(`
 		@layer {
 			@layer first {}
@@ -111,16 +154,19 @@ test.skip('nested layers with anonymous layers and duplicate names', () => {
 	`)
 	let expected = [
 		{
-			name: '<anonymous>',
+			name: '__anonymous-1__',
+			locations: [{ line: 2, column: 3, start: 3, end: 34 }],
 			children: [
 				{
 					name: 'first',
 					children: [],
-				}
-			],
+					locations: [{ line: 3, column: 4, start: 15, end: 30 }],
+				},
+			]
 		},
 		{
 			name: 'first',
+			locations: [{ line: 6, column: 3, start: 38, end: 53 }],
 			children: [],
 		},
 	]
