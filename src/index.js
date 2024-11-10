@@ -1,204 +1,153 @@
 import * as csstree from 'css-tree'
+import { TreeNode } from './TreeNode.js'
 
 /**
- * @typedef {Object} LayerTree
- * @property {string} name
- * @property {LayerTree[]} children
+ * @typedef Location
+ * @property {number} line
+ * @property {number} column
+ * @property {number} start
+ * @property {number} end
  */
 
-class List {
-	/** @type {string} */
-	name
-	/** @type {List[]} */
-	children
-
-	/**
-	 * @param {string | undefined} name
-	 */
-	constructor(name = undefined) {
-		this.name = name || 'root'
-		this.children = []
-	}
-
-	/** @param {string} name */
-	has(name) {
-		for (let child of this.children) {
-			if (child.name === name) {
-				return true
-			}
-		}
-		return false
-	}
-
-	/**
-	 *
-	 * @param {string} name
-	 * @returns
-	 */
-	push(name) {
-		if (this.has(name) && name !== '<anonymous>') {
-			return this.children.find((child) => child.name === name)
-		}
-
-		let new_item = new List(name)
-		this.children.push(new_item)
-		return new_item
-	}
-
-	/**
-	 * @returns {LayerTree}
-	 */
-	serialize() {
-		return {
-			name: this.name,
-			children: this.children.map((child) => child.serialize()),
-		}
+/**
+ * @param {import('css-tree').CssNode} node
+ * @returns {Location | undefined}
+ */
+function get_location(node) {
+	let loc = node.loc
+	if (!loc) return
+	return {
+		line: loc.start.line,
+		column: loc.start.column,
+		start: loc.start.offset,
+		end: loc.end.offset,
 	}
 }
 
-/**
- * Get the parent Atrule for `childNode`
- * @param {import('css-tree').CssNode} ast The AST to search in
- * @param {import('css-tree').Atrule} childNode The Atrule we want to get the potential parent Atrule for
- */
-function get_parent_rule(ast, childNode) {
-	let parent
-	csstree.walk(ast, {
-		visit: 'Atrule',
-		enter: function (/** @type {import('css-tree').Atrule} */node) {
-			if (node === childNode && this.atrule) {
-				parent = this.atrule
-				return this.break
-			}
-		},
-	})
-	return parent
-}
-
-/**
- * @param {import('css-tree').AtrulePrelude | import('css-tree').Raw | null} prelude
- * @returns string
- */
-function get_layer_name(prelude) {
-	return prelude === null ? '<anonymous>' : csstree.generate(prelude)
-}
-
-/**
- *
- * @param {import('css-tree').CssNode} ast
- * @param {import('css-tree').Atrule} atrule
- * @returns {string[]}
- */
-function resolve_parent_tree(ast, atrule) {
-	let stack = []
-
-	// @ts-expect-error Let me just do a while loop plz
-	while ((atrule = get_parent_rule(ast, atrule))) {
-		if (atrule.name === 'layer') {
-			stack.unshift(get_layer_name(atrule.prelude))
-		}
-	}
-
-	return stack
+/** @param {import('css-tree').Atrule} node */
+function is_layer(node) {
+	return node.name.toLowerCase() === 'layer'
 }
 
 /**
  * @param {import('css-tree').CssNode} ast
- * @returns {string[][]}
  */
-export function get_ast_tree(ast) {
-	/** @type {string[][]} */
-	let list = []
+export function get_tree_from_ast(ast) {
+	/** @type {string[]} */
+	let current_stack = []
+	let root = new TreeNode('root')
+	let anonymous_counter = 0
+
+	/** @returns {string} */
+	function get_anonymous_id() {
+		anonymous_counter++
+		return `__anonymous-${anonymous_counter}__`
+	}
+
+	/**
+	 * @param {import('css-tree').AtrulePrelude} prelude
+	 * @returns {string[]}
+	 */
+	function get_layer_names(prelude) {
+		return csstree
+			// @todo: fewer loops plz
+			.generate(prelude)
+			.split('.')
+			.map((s) => s.trim())
+	}
 
 	csstree.walk(ast, {
 		visit: 'Atrule',
-		enter: function (/** @type {import('css-tree').Atrule} */ node) {
-			if (node.name === 'layer') {
-				let layer_name = get_layer_name(node.prelude)
+		enter(node) {
+			if (is_layer(node)) {
+				let location = get_location(node)
 
-				// @layer first, second;
-				if (node.block === null) {
-					for (let name of layer_name.split(',')) {
-						list.push([...resolve_parent_tree(ast, node), name.trim()])
-					}
-
-					return this.skip
+				if (node.prelude === null) {
+					let layer_name = get_anonymous_id()
+					root.add_child(current_stack, layer_name, location)
+					current_stack.push(layer_name)
+					return
 				}
 
-				// @layer first { /* content */ }
-				list.push([...resolve_parent_tree(ast, node), layer_name])
-				return this.skip
-			} else if (node.name === 'import' && node.prelude !== null) {
+				if (node.prelude.type === 'AtrulePrelude') {
+					if (node.block === null) {
+						// @ts-expect-error CSSTree types are not updated yet in @types/css-tree
+						let prelude = csstree.findAll(node.prelude, n => n.type === 'Layer').map(n => n.name)
+						for (let name of prelude) {
+							root.add_child(current_stack, name, location)
+						}
+					} else {
+						for (let layer_name of get_layer_names(node.prelude)) {
+							root.add_child(current_stack, layer_name, location)
+							current_stack.push(layer_name)
+						}
+					}
+				}
+			} else if (node.name.toLowerCase() === 'import' && node.prelude !== null && node.prelude.type === 'AtrulePrelude') {
+				let location = get_location(node)
+				let prelude = node.prelude
+
 				// @import url("foo.css") layer(test);
+				// OR
+				// @import url("foo.css") layer(test.nested);
 				// @ts-expect-error CSSTree types are not updated to v3 yet
-				let layer = csstree.find(node.prelude, (pr_node) => pr_node.type === 'Layer')
+				let layer = csstree.find(prelude, n => n.type === 'Layer')
 				if (layer) {
 					// @ts-expect-error CSSTree types are not updated to v3 yet
-					list.push([layer.name])
+					for (let layer_name of get_layer_names(layer)) {
+						root.add_child(current_stack, layer_name, location)
+						current_stack.push(layer_name)
+					}
 					return this.skip
 				}
 
 				// @import url("foo.css") layer();
-				let layer_fn = csstree.find(
-					node.prelude,
-					(pr_node) =>
-						pr_node.type === 'Function' && pr_node.name.toLowerCase() === 'layer'
-				)
+				let layer_fn = csstree.find(prelude, n => n.type === 'Function' && n.name.toLowerCase() === 'layer')
 				if (layer_fn) {
-					list.push(['<anonymous>'])
+					root.add_child([], get_anonymous_id(), location)
 					return this.skip
 				}
 
 				// @import url("foo.css") layer;
-				let layer_keyword = csstree.find(
-					node.prelude,
-					(pre_node) =>
-						pre_node.type === 'Identifier' && pre_node.name.toLowerCase() === 'layer'
-				)
+				let layer_keyword = csstree.find(prelude, n => n.type === 'Identifier' && n.name.toLowerCase() === 'layer')
 				if (layer_keyword) {
-					list.push(['<anonymous>'])
+					root.add_child([], get_anonymous_id(), location)
 					return this.skip
 				}
 			}
-			return this.skip
-		}
+		},
+		leave(node) {
+			if (is_layer(node)) {
+				if (node.prelude !== null && node.prelude.type === 'AtrulePrelude') {
+					let layer_names = get_layer_names(node.prelude)
+					for (let i = 0; i < layer_names.length; i++) {
+						current_stack.pop()
+					}
+				} else {
+					// pop the anonymous layer
+					current_stack.pop()
+				}
+			} else if (node.name.toLowerCase() === 'import') {
+				// clear the stack, imports can not be nested
+				current_stack.length = 0
+			}
+		},
 	})
 
-	return list
+	return root.to_plain_object().children
 }
 
 /**
  * @param {string} css
- * @returns {LayerTree[]}
  */
 export function get_tree(css) {
 	let ast = csstree.parse(css, {
 		positions: true,
 		parseAtrulePrelude: true,
-		parseRulePrelude: false,
 		parseValue: false,
+		parseRulePrelude: false,
 		parseCustomProperty: false,
 	})
-	let list_of_layers = get_ast_tree(ast).map((layer) => layer.join('.'))
 
-	let known = new List()
-
-	for (let name of list_of_layers) {
-		if (name.includes('.')) {
-			let parts = name.split('.')
-			// @ts-expect-error Let me just do a while loop plz
-			let last_item = known.push(parts.shift())
-
-			while (parts.length > 0 && last_item) {
-				// @ts-expect-error Let me just do a while loop plz
-				last_item = last_item.push(parts.shift())
-			}
-
-			continue
-		}
-
-		known.push(name)
-	}
-
-	return known.children.map((child) => child.serialize())
+	return get_tree_from_ast(ast)
 }
