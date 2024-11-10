@@ -1,6 +1,62 @@
 import * as csstree from 'css-tree'
 
 /**
+ * @typedef {Object} LayerTree
+ * @property {string} name
+ * @property {LayerTree[]} children
+ */
+
+class List {
+	/** @type {string} */
+	name
+	/** @type {List[]} */
+	children
+
+	/**
+	 * @param {string | undefined} name
+	 */
+	constructor(name = undefined) {
+		this.name = name || 'root'
+		this.children = []
+	}
+
+	/** @param {string} name */
+	has(name) {
+		for (let child of this.children) {
+			if (child.name === name) {
+				return true
+			}
+		}
+		return false
+	}
+
+	/**
+	 *
+	 * @param {string} name
+	 * @returns
+	 */
+	push(name) {
+		if (this.has(name) && name !== '<anonymous>') {
+			return this.children.find((child) => child.name === name)
+		}
+
+		let new_item = new List(name)
+		this.children.push(new_item)
+		return new_item
+	}
+
+	/**
+	 * @returns {LayerTree}
+	 */
+	serialize() {
+		return {
+			name: this.name,
+			children: this.children.map((child) => child.serialize()),
+		}
+	}
+}
+
+/**
  * Get the parent Atrule for `childNode`
  * @param {import('css-tree').CssNode} ast The AST to search in
  * @param {import('css-tree').Atrule} childNode The Atrule we want to get the potential parent Atrule for
@@ -113,7 +169,7 @@ export function get_ast_tree(ast) {
 
 /**
  * @param {string} css
- * @returns {string[][]}
+ * @returns {LayerTree[]}
  */
 export function get_tree(css) {
 	let ast = csstree.parse(css, {
@@ -123,5 +179,26 @@ export function get_tree(css) {
 		parseValue: false,
 		parseCustomProperty: false,
 	})
-	return get_ast_tree(ast)
+	let list_of_layers = get_ast_tree(ast).map((layer) => layer.join('.'))
+
+	let known = new List()
+
+	for (let name of list_of_layers) {
+		if (name.includes('.')) {
+			let parts = name.split('.')
+			// @ts-expect-error Let me just do a while loop plz
+			let last_item = known.push(parts.shift())
+
+			while (parts.length > 0 && last_item) {
+				// @ts-expect-error Let me just do a while loop plz
+				last_item = last_item.push(parts.shift())
+			}
+
+			continue
+		}
+
+		known.push(name)
+	}
+
+	return known.children.map((child) => child.serialize())
 }
