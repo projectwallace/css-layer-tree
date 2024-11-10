@@ -1,27 +1,27 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { resolve } from '../src/index.js'
+import { get_tree } from '../src/index.js'
 
 test('single named layer without body', () => {
-	let actual = resolve('@layer first;')
+	let actual = get_tree('@layer first;')
 	let expected = [['first']]
 	assert.equal(actual, expected)
 })
 
 test('single named layer with body', () => {
-	let actual = resolve('@layer first {}')
+	let actual = get_tree('@layer first {}')
 	let expected = [['first']]
 	assert.equal(actual, expected)
 })
 
 test('multiple named layers in one line', () => {
-	let actual = resolve('@layer first, second;')
+	let actual = get_tree('@layer first, second;')
 	let expected = [['first'], ['second']]
 	assert.equal(actual, expected)
 })
 
 test('nested layers', () => {
-	let actual = resolve(`
+	let actual = get_tree(`
 		@layer first {
 			@layer second {}
 		}
@@ -31,7 +31,7 @@ test('nested layers', () => {
 })
 
 test('nested layers with anonymous layers', () => {
-	let actual = resolve(`
+	let actual = get_tree(`
 		@layer {
 			@layer {}
 		}
@@ -41,7 +41,7 @@ test('nested layers with anonymous layers', () => {
 })
 
 test('nested layers with anonymous layers and duplicate names', () => {
-	let actual = resolve(`
+	let actual = get_tree(`
 		@layer {
 			@layer first {}
 		}

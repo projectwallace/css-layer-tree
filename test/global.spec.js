@@ -1,13 +1,13 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { resolve } from '../src/index.js'
+import { get_tree } from '../src/index.js'
 
 test('handles empty input', () => {
-	assert.equal(resolve(''), [])
+	assert.equal(get_tree(''), [])
 })
 
 test('handles CSS without layers', () => {
-	assert.equal(resolve('@media all { body { color: red; } }'), [])
+	assert.equal(get_tree('@media all { body { color: red; } }'), [])
 })
 
 test.run()

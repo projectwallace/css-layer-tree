@@ -50,7 +50,7 @@ function resolve_parent_tree(ast, atrule) {
  * @param {import('css-tree').CssNode} ast
  * @returns {string[][]}
  */
-export function resolve_ast(ast) {
+export function get_ast_tree(ast) {
 	/** @type {string[][]} */
 	let list = []
 
@@ -115,7 +115,7 @@ export function resolve_ast(ast) {
  * @param {string} css
  * @returns {string[][]}
  */
-export function resolve(css) {
+export function get_tree(css) {
 	let ast = csstree.parse(css, {
 		positions: true,
 		parseAtrulePrelude: true,
@@ -123,5 +123,5 @@ export function resolve(css) {
 		parseValue: false,
 		parseCustomProperty: false,
 	})
-	return resolve_ast(ast)
+	return get_ast_tree(ast)
 }
