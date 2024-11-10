@@ -48,7 +48,8 @@
     "layer",
     "layers",
     "composition",
-    "architecture"
+    "architecture",
+    "tree"
   ],
   "prettier": {
     "semi": false,
