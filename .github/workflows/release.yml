@@ -25,10 +25,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          cache: "npm"
+          cache: 'npm'
           registry-url: https://registry.npmjs.org/
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run build
-      - run: npm publish
+      - run: npm publish --public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
