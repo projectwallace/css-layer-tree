@@ -16,7 +16,7 @@
     "require": "./dist/css-layer-tree.umd.cjs",
     "default": "./dist/css-layer-tree.js"
   },
-  "types": "./dist/css-layer-tree.d.ts",
+  "types": "./index.d.ts",
   "main": "./dist/css-layer-tree.umd.cjs",
   "module": "./dist/css-layer-tree.js",
   "unpkg": "./dist/css-layer-tree.umd.cjs",
