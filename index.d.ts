@@ -13,5 +13,5 @@ export type TreeNode = {
 	locations: Location[];
 }
 
-export function get_tree_from_ast(ast: CssNode): TreeNode['children'];
-export function get_tree(css: string): TreeNode['children'];
+export function layer_tree_from_ast(ast: CssNode): TreeNode[];
+export function layer_tree(css: string): TreeNode[];

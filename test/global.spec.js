@@ -1,24 +1,24 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { get_tree } from '../src/index.js'
+import { layer_tree } from '../src/index.js'
 
 test('handles empty input', () => {
-	assert.equal(get_tree(''), [])
+	assert.equal(layer_tree(''), [])
 })
 
 test('handles CSS without layers', () => {
-	assert.equal(get_tree('@media all { body { color: red; } }'), [])
+	assert.equal(layer_tree('@media all { body { color: red; } }'), [])
 })
 
 test('mixed imports and layers', () => {
-	let actual = get_tree(`
+	let actual = layer_tree(`
 		@import url("test.css") layer;
 		@import url("test.css") LAYER(test);
 		@layer anotherTest {
 			@layer moreTest {
 				@layer deepTest {}
 			}
-		};
+		}
 		/* anonymous @layer */
 		@layer {}
 	`)
@@ -49,6 +49,11 @@ test('mixed imports and layers', () => {
 					]
 				}
 			]
+		},
+		{
+			name: '__anonymous-2__',
+			locations: [{ line: 10, column: 3, start: 176, end: 185 }],
+			children: []
 		}
 	]
 	assert.equal(actual, expected)

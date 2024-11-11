@@ -59,6 +59,11 @@ This example would result in this `tree`:
 			},
 		],
 	},
+	{
+		name: '__anonymous-2__',
+		locations: [{ line: 10, column: 3, start: 176, end: 185 }],
+		children: [],
+	},
 ]
 ```
 

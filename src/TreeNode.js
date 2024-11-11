@@ -7,7 +7,7 @@ export class TreeNode {
 		/** @type {Map<string, TreeNode<T>>} */
 		this.children = new Map()
 		/** @type {T[]} */
-		this.locations = [] // Store metadata for each location added
+		this.locations = []
 	}
 
 	/**
@@ -53,8 +53,7 @@ export class TreeNode {
 			name: this.name,
 			locations: this.locations,
 			children: Array
-				.from(this.children.values())
-				.map((child) => child.to_plain_object()),
+				.from(this.children.values(), (child) => child.to_plain_object())
 		}
 	}
 }

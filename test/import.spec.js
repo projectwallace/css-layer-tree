@@ -1,9 +1,9 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { get_tree } from '../src/index.js'
+import { layer_tree } from '../src/index.js'
 
 test('@import url() layer', () => {
-	let actual = get_tree('@import url("foo.css") layer;')
+	let actual = layer_tree('@import url("foo.css") layer;')
 	let expected = [{
 		name: '__anonymous-1__',
 		locations: [{ line: 1, column: 1, start: 0, end: 29 }],
@@ -13,7 +13,7 @@ test('@import url() layer', () => {
 })
 
 test('@import url() LAYER', () => {
-	let actual = get_tree('@import url("foo.css") LAYER;')
+	let actual = layer_tree('@import url("foo.css") LAYER;')
 	let expected = [{
 		"name": "__anonymous-1__",
 		locations: [{ line: 1, column: 1, start: 0, end: 29 }],
@@ -23,7 +23,7 @@ test('@import url() LAYER', () => {
 })
 
 test('@import url() layer()', () => {
-	let actual = get_tree('@import url("foo.css") layer();')
+	let actual = layer_tree('@import url("foo.css") layer();')
 	let expected = [{
 		name: '__anonymous-1__',
 		locations: [{ line: 1, column: 1, start: 0, end: 31 }],
@@ -33,7 +33,7 @@ test('@import url() layer()', () => {
 })
 
 test('@import url() LAYER()', () => {
-	let actual = get_tree('@import url("foo.css") LAYER();')
+	let actual = layer_tree('@import url("foo.css") LAYER();')
 	let expected = [{
 		name: '__anonymous-1__',
 		locations: [{ line: 1, column: 1, start: 0, end: 31 }],
@@ -43,7 +43,7 @@ test('@import url() LAYER()', () => {
 })
 
 test('@import url() layer(named)', () => {
-	let actual = get_tree('@import url("foo.css") layer(named);')
+	let actual = layer_tree('@import url("foo.css") layer(named);')
 	let expected = [{
 		name: 'named',
 		locations: [{ line: 1, column: 1, start: 0, end: 36 }],
@@ -53,7 +53,7 @@ test('@import url() layer(named)', () => {
 })
 
 test('@import url() LAYER(named)', () => {
-	let actual = get_tree('@import url("foo.css") LAYER(named);')
+	let actual = layer_tree('@import url("foo.css") LAYER(named);')
 	let expected = [{
 		name: 'named',
 		locations: [{ line: 1, column: 1, start: 0, end: 36 }],
@@ -63,7 +63,7 @@ test('@import url() LAYER(named)', () => {
 })
 
 test('@import url() layer(named.nested)', () => {
-	let actual = get_tree('@import url("foo.css") layer(named.nested);')
+	let actual = layer_tree('@import url("foo.css") layer(named.nested);')
 	let expected = [{
 		name: 'named',
 		locations: [{ line: 1, column: 1, start: 0, end: 43 }],
@@ -77,7 +77,7 @@ test('@import url() layer(named.nested)', () => {
 })
 
 test('@import url() layer(named.nested     )', () => {
-	let actual = get_tree('@import url("foo.css") layer(named.nested     );')
+	let actual = layer_tree('@import url("foo.css") layer(named.nested     );')
 	let expected = [{
 		name: 'named',
 		locations: [{ line: 1, column: 1, start: 0, end: 48 }],
@@ -91,7 +91,7 @@ test('@import url() layer(named.nested     )', () => {
 })
 
 test('@import url() layer(/* test */named.nested     )', () => {
-	let actual = get_tree('@import url("foo.css") layer(/* test */named.nested     );')
+	let actual = layer_tree('@import url("foo.css") layer(/* test */named.nested     );')
 	let expected = [{
 		name: 'named',
 		locations: [{ line: 1, column: 1, start: 0, end: 58 }],

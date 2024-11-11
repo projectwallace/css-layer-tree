@@ -30,9 +30,21 @@ function is_layer(node) {
 }
 
 /**
+ * @param {import('css-tree').AtrulePrelude} prelude
+ * @returns {string[]}
+ */
+function get_layer_names(prelude) {
+	return csstree
+		// @todo: fewer loops plz
+		.generate(prelude)
+		.split('.')
+		.map((s) => s.trim())
+}
+
+/**
  * @param {import('css-tree').CssNode} ast
  */
-export function get_tree_from_ast(ast) {
+export function layer_tree_from_ast(ast) {
 	/** @type {string[]} */
 	let current_stack = []
 	let root = new TreeNode('root')
@@ -42,18 +54,6 @@ export function get_tree_from_ast(ast) {
 	function get_anonymous_id() {
 		anonymous_counter++
 		return `__anonymous-${anonymous_counter}__`
-	}
-
-	/**
-	 * @param {import('css-tree').AtrulePrelude} prelude
-	 * @returns {string[]}
-	 */
-	function get_layer_names(prelude) {
-		return csstree
-			// @todo: fewer loops plz
-			.generate(prelude)
-			.split('.')
-			.map((s) => s.trim())
 	}
 
 	csstree.walk(ast, {
@@ -66,10 +66,7 @@ export function get_tree_from_ast(ast) {
 					let layer_name = get_anonymous_id()
 					root.add_child(current_stack, layer_name, location)
 					current_stack.push(layer_name)
-					return
-				}
-
-				if (node.prelude.type === 'AtrulePrelude') {
+				} else if (node.prelude.type === 'AtrulePrelude') {
 					if (node.block === null) {
 						// @ts-expect-error CSSTree types are not updated yet in @types/css-tree
 						let prelude = csstree.findAll(node.prelude, n => n.type === 'Layer').map(n => n.name)
@@ -140,7 +137,7 @@ export function get_tree_from_ast(ast) {
 /**
  * @param {string} css
  */
-export function get_tree(css) {
+export function layer_tree(css) {
 	let ast = csstree.parse(css, {
 		positions: true,
 		parseAtrulePrelude: true,
@@ -149,5 +146,5 @@ export function get_tree(css) {
 		parseCustomProperty: false,
 	})
 
-	return get_tree_from_ast(ast)
+	return layer_tree_from_ast(ast)
 }

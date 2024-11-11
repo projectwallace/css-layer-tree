@@ -4,7 +4,7 @@
   "description": "Discover the composition of your CSS @layers",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/projectwallace/css-layers.git"
+    "url": "git+https://github.com/projectwallace/css-layer-tree.git"
   },
   "homepage": "https://github.com/projectwallace/css-layer-tree",
   "issues": "https://github.com/projectwallace/css-layer-tree/issues",
