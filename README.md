@@ -11,7 +11,7 @@ npm install @projectwallace/css-layer-tree
 ## Usage
 
 ```js
-import { get_tree } from '@projectwallace/css-layer-tree'
+import { layer_tree } from '@projectwallace/css-layer-tree'
 
 let css = `
 @import url("test.css") layer;
@@ -25,7 +25,7 @@ let css = `
 @layer {}
 `
 
-let tree = get_tree(css)
+let tree = layer_tree(css)
 ```
 
 This example would result in this `tree`:
