@@ -22,26 +22,6 @@ test('@import url() LAYER', () => {
 	assert.equal(actual, expected)
 })
 
-test('@import url() layer()', () => {
-	let actual = layer_tree('@import url("foo.css") layer();')
-	let expected = [{
-		name: '__anonymous-1__',
-		locations: [{ line: 1, column: 1, start: 0, end: 31 }],
-		children: []
-	}]
-	assert.equal(actual, expected)
-})
-
-test('@import url() LAYER()', () => {
-	let actual = layer_tree('@import url("foo.css") LAYER();')
-	let expected = [{
-		name: '__anonymous-1__',
-		locations: [{ line: 1, column: 1, start: 0, end: 31 }],
-		children: []
-	}]
-	assert.equal(actual, expected)
-})
-
 test('@import url() layer(named)', () => {
 	let actual = layer_tree('@import url("foo.css") layer(named);')
 	let expected = [{

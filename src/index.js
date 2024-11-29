@@ -98,13 +98,6 @@ export function layer_tree_from_ast(ast) {
 					return this.skip
 				}
 
-				// @import url("foo.css") layer();
-				let layer_fn = csstree.find(prelude, n => n.type === 'Function' && n.name.toLowerCase() === 'layer')
-				if (layer_fn) {
-					root.add_child([], get_anonymous_id(), location)
-					return this.skip
-				}
-
 				// @import url("foo.css") layer;
 				let layer_keyword = csstree.find(prelude, n => n.type === 'Identifier' && n.name.toLowerCase() === 'layer')
 				if (layer_keyword) {
