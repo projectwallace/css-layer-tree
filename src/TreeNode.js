@@ -4,6 +4,8 @@ export class TreeNode {
 	constructor(name) {
 		/** @type {string} */
 		this.name = name
+		/** @type {boolean} */
+		this.is_anonymous = false
 		/** @type {Map<string, TreeNode<T>>} */
 		this.children = new Map()
 		/** @type {T[]} */
@@ -11,7 +13,6 @@ export class TreeNode {
 	}
 
 	/**
-	 *
 	 * @param {string[]} path
 	 * @param {string} name
 	 * @param {T} location
@@ -33,6 +34,7 @@ export class TreeNode {
 			// Otherwise, create the item and add the location
 			const new_node = new TreeNode(name)
 			new_node.locations.push(location)
+			new_node.is_anonymous = name.startsWith('__anonymous')
 			current.children.set(name, new_node)
 		}
 	}
@@ -40,6 +42,7 @@ export class TreeNode {
 	/**
 	 * @typedef PlainObject
 	 * @property {string} name
+	 * @property {boolean} is_anonymous
 	 * @property {T[]} locations
 	 * @property {PlainObject[]} children
 	 */
@@ -51,6 +54,7 @@ export class TreeNode {
 	to_plain_object() {
 		return {
 			name: this.name,
+			is_anonymous: this.is_anonymous,
 			locations: this.locations,
 			children: Array
 				.from(this.children.values(), (child) => child.to_plain_object())
