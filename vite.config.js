@@ -6,20 +6,12 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.js"),
-      name: "cssLayerTree",
-      fileName: "css-layer-tree",
+      formats: ['es']
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
       external: ['css-tree'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          'css-tree': 'csstree',
-        },
-      },
     },
   },
   plugins: [
