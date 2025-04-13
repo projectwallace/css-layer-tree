@@ -1,25 +1,27 @@
 {
   "name": "@projectwallace/css-layer-tree",
-  "version": "1.0.1",
-  "description": "Discover the composition of your CSS @layers",
+  "version": "2.0.0-alpha.0",
+  "description": "Discover the composition of your CSS @layers in a tree-based format.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/projectwallace/css-layer-tree.git"
   },
+  "author": {
+    "name": "Bart Veneman"
+  },
   "homepage": "https://github.com/projectwallace/css-layer-tree",
   "issues": "https://github.com/projectwallace/css-layer-tree/issues",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "type": "module",
-  "source": "src/index.js",
+  "main": "./dist/css-layer-tree.js",
+  "types": "./index.d.ts",
   "exports": {
     "types": "./index.d.ts",
-    "require": "./dist/css-layer-tree.umd.cjs",
     "default": "./dist/css-layer-tree.js"
   },
-  "types": "./index.d.ts",
-  "main": "./dist/css-layer-tree.umd.cjs",
-  "module": "./dist/css-layer-tree.js",
-  "unpkg": "./dist/css-layer-tree.umd.cjs",
   "scripts": {
     "build": "vite build",
     "test": "c8 --reporter=lcov uvu",

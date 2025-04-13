@@ -9,6 +9,7 @@ export type Location = {
 
 export type TreeNode = {
 	name: string;
+	is_anonymous: boolean;
 	children: TreeNode[];
 	locations: Location[];
 }
