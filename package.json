@@ -1,6 +1,6 @@
 {
   "name": "@projectwallace/css-layer-tree",
-  "version": "2.0.0",
+  "version": "2.0.0-alpha.0",
   "description": "Discover the composition of your CSS @layers in a tree-based format.",
   "repository": {
     "type": "git",
