@@ -73,6 +73,32 @@ test('multiple named layers in one line', () => {
 	assert.equal(actual, expected)
 })
 
+test('multiple named + nested layers without body', () => {
+	let actual = layer_tree(`@layer core.reset, core.tokens;`)
+	let expected = [
+		{
+			name: 'core',
+			is_anonymous: false,
+			children: [
+				{
+					name: 'reset',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 1, start: 0, end: 31 }]
+				},
+				{
+					name: 'tokens',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 1, start: 0, end: 31 }]
+				}
+			],
+			locations: [{ line: 1, column: 1, start: 0, end: 31 }]
+		}
+	]
+	assert.equal(actual, expected)
+})
+
 test('repeated use of the same layer name', () => {
 	let actual = layer_tree(`
 		@layer first {}

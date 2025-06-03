@@ -16,11 +16,12 @@ import { TreeNode } from './TreeNode.js'
 function get_location(node) {
 	let loc = node.loc
 	if (!loc) return
+	let { start, end } = loc
 	return {
-		line: loc.start.line,
-		column: loc.start.column,
-		start: loc.start.offset,
-		end: loc.end.offset,
+		line: start.line,
+		column: start.column,
+		start: start.offset,
+		end: end.offset,
 	}
 }
 
@@ -63,17 +64,29 @@ export function layer_tree_from_ast(ast) {
 				let location = get_location(node)
 
 				if (node.prelude === null) {
+					// @layer {}
 					let layer_name = get_anonymous_id()
 					root.add_child(current_stack, layer_name, location)
 					current_stack.push(layer_name)
 				} else if (node.prelude.type === 'AtrulePrelude') {
 					if (node.block === null) {
+						// @layer test;
+						// @layer test.nested;
+						// @layer first, second;
+						// @layer core.reset, core.tokens;
 						// @ts-expect-error CSSTree types are not updated yet in @types/css-tree
-						let prelude = csstree.findAll(node.prelude, n => n.type === 'Layer').map(n => n.name)
-						for (let name of prelude) {
-							root.add_child(current_stack, name, location)
+						let layers = csstree.findAll(node.prelude, n => n.type === 'Layer')
+						for (let layer of layers) {
+							// console.log('enter', layer.name)
+							for (let layer_name of get_layer_names(layer)) {
+								root.add_child(current_stack, layer_name, location)
+								current_stack.push(layer_name)
+							}
+							current_stack = []
 						}
 					} else {
+						// @layer test { ... }
+						// @layer test.nested { ... }
 						for (let layer_name of get_layer_names(node.prelude)) {
 							root.add_child(current_stack, layer_name, location)
 							current_stack.push(layer_name)
@@ -109,9 +122,10 @@ export function layer_tree_from_ast(ast) {
 		leave(node) {
 			if (is_layer(node)) {
 				if (node.prelude !== null && node.prelude.type === 'AtrulePrelude') {
-					let layer_names = get_layer_names(node.prelude)
-					for (let i = 0; i < layer_names.length; i++) {
-						current_stack.pop()
+					let layers = csstree.findAll(node.prelude, n => n.type === 'Layer')
+					for (let layer of layers) {
+						// console.log('leave', layer.name)
+						current_stack = []
 					}
 				} else {
 					// pop the anonymous layer
