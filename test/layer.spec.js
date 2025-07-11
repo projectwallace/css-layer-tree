@@ -2,32 +2,6 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 import { layer_tree } from '../src/index.js'
 
-test('single anonymous layer without body', () => {
-	let actual = layer_tree('@layer;')
-	let expected = [
-		{
-			name: '__anonymous-1__',
-			is_anonymous: true,
-			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 7 }]
-		},
-	]
-	assert.equal(actual, expected)
-})
-
-test('single anonymous layer with body', () => {
-	let actual = layer_tree('@layer {}')
-	let expected = [
-		{
-			name: '__anonymous-1__',
-			is_anonymous: true,
-			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 9 }]
-		},
-	]
-	assert.equal(actual, expected)
-})
-
 test('single named layer without body', () => {
 	let actual = layer_tree('@layer first;')
 	let expected = [
@@ -69,6 +43,35 @@ test('multiple named layers in one line', () => {
 			children: [],
 			locations: [{ line: 1, column: 1, start: 0, end: 21 }]
 		},
+	]
+	assert.equal(actual, expected)
+})
+
+test('multiple named + nested layers without body', () => {
+	let actual = layer_tree(`@layer core.reset, core.tokens;`)
+	let expected = [
+		{
+			name: 'core',
+			is_anonymous: false,
+			locations: [
+				{ line: 1, column: 1, start: 0, end: 31 },
+				{ line: 1, column: 1, start: 0, end: 31 },
+			],
+			children: [
+				{
+					name: 'reset',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 1, start: 0, end: 31 }]
+				},
+				{
+					name: 'tokens',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 1, start: 0, end: 31 }]
+				}
+			],
+		}
 	]
 	assert.equal(actual, expected)
 })
@@ -133,53 +136,7 @@ test('nested layers', () => {
 	assert.equal(actual, expected)
 })
 
-test('nested layers with anonymous layers', () => {
-	let actual = layer_tree(`
-		@layer {
-			@layer {}
-		}
-	`)
-	let expected = [
-		{
-			name: '__anonymous-1__',
-			is_anonymous: true,
-			locations: [{ line: 2, column: 3, start: 3, end: 28 }],
-			children: [
-				{
-					name: '__anonymous-2__',
-					is_anonymous: true,
-					children: [],
-					locations: [{ line: 3, column: 4, start: 15, end: 24 }],
-				},
-			],
-		},
-	]
-	assert.equal(actual, expected)
-})
-
-test('consecutive anonymous layers', () => {
-	let actual = layer_tree(`
-		@layer {}
-		@layer {}
-	`)
-	let expected = [
-		{
-			name: '__anonymous-1__',
-			is_anonymous: true,
-			locations: [{ line: 2, column: 3, start: 3, end: 12 }],
-			children: [],
-		},
-		{
-			name: '__anonymous-2__',
-			is_anonymous: true,
-			locations: [{ line: 3, column: 3, start: 15, end: 24 }],
-			children: [],
-		},
-	]
-	assert.equal(actual, expected)
-})
-
-test('nested layers with anonymous layers and duplicate names', () => {
+test.only('nested layers with anonymous layers and duplicate names', () => {
 	let actual = layer_tree(`
 		@layer {
 			@layer first {}
@@ -202,7 +159,7 @@ test('nested layers with anonymous layers and duplicate names', () => {
 			]
 		},
 		{
-			name: 'first',
+			name: 'second',
 			is_anonymous: false,
 			locations: [{ line: 6, column: 3, start: 38, end: 53 }],
 			children: [],

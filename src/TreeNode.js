@@ -1,11 +1,11 @@
 /** @template T*/
 export class TreeNode {
 	/** @param {string} name */
-	constructor(name) {
+	constructor(name, is_anonymous = false) {
 		/** @type {string} */
 		this.name = name
 		/** @type {boolean} */
-		this.is_anonymous = false
+		this.is_anonymous = is_anonymous
 		/** @type {Map<string, TreeNode<T>>} */
 		this.children = new Map()
 		/** @type {T[]} */
@@ -13,29 +13,25 @@ export class TreeNode {
 	}
 
 	/**
-	 * @param {string[]} path
-	 * @param {string} name
-	 * @param {T} location
+	 * @param {string} name The name of the node
+	 * @param {T} location The location of the node
+	 * @param {boolean} is_anonymous Whether the node is anonymous
+	 * @returns {TreeNode<T>} The node that was added or the existing node if it already existed
 	 */
-	add_child(path, name, location) {
-		let current = this
-
-		// Traverse path to find the correct location
-		path.forEach((segment) => {
-			// @ts-expect-error Apparently, TypeScript doesn't know that current is a TreeNode
-			current = current.children.get(segment)
-		})
-
+	add_child(name, location, is_anonymous = false) {
 		// If the item already exists, add the location to its metadata
-		if (current.children.has(name)) {
-			// @ts-expect-error Apparently, TypeScript doesn't know that current is a TreeNode
-			current.children.get(name).locations.push(location)
+		if (this.children.has(name)) {
+			let child = this.children.get(name)
+			// @ts-expect-error Apparently, TypeScript doesn't know that this is a TreeNode
+			child.locations.push(location)
+			// @ts-expect-error Apparently, TypeScript doesn't know that this is a TreeNode
+			return child
 		} else {
 			// Otherwise, create the item and add the location
-			const new_node = new TreeNode(name)
+			const new_node = new TreeNode(name, is_anonymous)
 			new_node.locations.push(location)
-			new_node.is_anonymous = name.startsWith('__anonymous')
-			current.children.set(name, new_node)
+			this.children.set(name, new_node)
+			return new_node
 		}
 	}
 

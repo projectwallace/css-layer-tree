@@ -16,11 +16,12 @@ import { TreeNode } from './TreeNode.js'
 function get_location(node) {
 	let loc = node.loc
 	if (!loc) return
+	let { start, end } = loc
 	return {
-		line: loc.start.line,
-		column: loc.start.column,
-		start: loc.start.offset,
-		end: loc.end.offset,
+		line: start.line,
+		column: start.column,
+		start: start.offset,
+		end: end.offset,
 	}
 }
 
@@ -41,46 +42,79 @@ function get_layer_names(prelude) {
 		.map((s) => s.trim())
 }
 
+/** @param {import('css-tree').Atrule} node */
+function is_named_layer_atrule(node) {
+	return node.type === 'Atrule' && node.name.toLowerCase() === 'layer' && node.prelude !== null
+}
+
+/** @param {import('css-tree').Atrule} node */
+function is_anonymous_layer_atrule(node) {
+	return node.type === 'Atrule' && node.name.toLowerCase() === 'layer' && node.prelude === null
+}
+
+/** @param {import('css-tree').Atrule} node */
+function is_import_atrule(node) {
+	if (node.type !== 'Atrule') return false
+	if (node.name.toLowerCase() !== 'import') return false
+	if (node.prelude === null) return false
+	if (node.prelude.type === 'Raw') return false
+	if (node.prelude.children === undefined) return false
+	return true
+}
+
 /**
  * @param {import('css-tree').CssNode} ast
  */
 export function layer_tree_from_ast(ast) {
-	/** @type {string[]} */
-	let current_stack = []
+	/** @type {TreeNode<Location>} */
 	let root = new TreeNode('root')
-	let anonymous_counter = 0
-
-	/** @returns {string} */
-	function get_anonymous_id() {
-		anonymous_counter++
-		return `__anonymous-${anonymous_counter}__`
-	}
+	let anonymous_layer_count = 0
+	let current_root = root
+	let start_node = root
 
 	csstree.walk(ast, {
-		visit: 'Atrule',
-		enter(node) {
-			if (is_layer(node)) {
-				let location = get_location(node)
+		enter: (/** @type {import('css-tree').CssNode} */ node) => {
+			if (is_named_layer_atrule(node)) {
+				start_node = current_root
 
-				if (node.prelude === null) {
-					let layer_name = get_anonymous_id()
-					root.add_child(current_stack, layer_name, location)
-					current_stack.push(layer_name)
-				} else if (node.prelude.type === 'AtrulePrelude') {
-					if (node.block === null) {
-						// @ts-expect-error CSSTree types are not updated yet in @types/css-tree
-						let prelude = csstree.findAll(node.prelude, n => n.type === 'Layer').map(n => n.name)
-						for (let name of prelude) {
-							root.add_child(current_stack, name, location)
-						}
-					} else {
-						for (let layer_name of get_layer_names(node.prelude)) {
-							root.add_child(current_stack, layer_name, location)
-							current_stack.push(layer_name)
+				// @layer test;
+				// @layer test.nested;
+				// @layer first, second;
+				// @layer core.reset, core.tokens;
+				if (node.block === null) {
+					let layer_names = csstree.findAll(node.prelude, n => n.type === 'Layer')
+					for (let layer_name of layer_names) {
+						current_root = start_node
+						for (let name of layer_name.name.split('.').map(s => s.trim())) {
+							current_root = current_root.add_child(name, get_location(node))
 						}
 					}
 				}
-			} else if (node.name.toLowerCase() === 'import' && node.prelude !== null && node.prelude.type === 'AtrulePrelude') {
+
+				// @layer test { ... }
+				// @layer test.nested { ... }
+				else {
+					let layer = csstree.find(node.prelude, n => n.type === 'Layer')
+					if (layer?.name !== undefined) {
+						current_root = start_node
+						for (let name of layer.name.split('.').map(s => s.trim())) {
+							console.log({ name, current_root: current_root.name })
+							current_root = current_root.add_child(name, get_location(node))
+						}
+					}
+				}
+
+				return
+			}
+
+			else if (is_anonymous_layer_atrule(node)) {
+				let location = get_location(node)
+				start_node = current_root
+				current_root = current_root.add_child(`__anonymous-${++anonymous_layer_count}__`, location, true)
+				return
+			}
+
+			else if (is_import_atrule(node)) {
 				let location = get_location(node)
 				let prelude = node.prelude
 
@@ -89,39 +123,30 @@ export function layer_tree_from_ast(ast) {
 				// @import url("foo.css") layer(test.nested);
 				// @ts-expect-error CSSTree types are not updated to v3 yet
 				let layer = csstree.find(prelude, n => n.type === 'Layer')
+				let current_root = root
 				if (layer) {
 					// @ts-expect-error CSSTree types are not updated to v3 yet
-					for (let layer_name of get_layer_names(layer)) {
-						root.add_child(current_stack, layer_name, location)
-						current_stack.push(layer_name)
+					for (let layer_name of layer.name?.split('.').map((s) => s.trim())) {
+						current_root = current_root.add_child(layer_name, location)
 					}
-					return this.skip
+					return
 				}
 
 				// @import url("foo.css") layer;
 				let layer_keyword = csstree.find(prelude, n => n.type === 'Identifier' && n.name.toLowerCase() === 'layer')
 				if (layer_keyword) {
-					root.add_child([], get_anonymous_id(), location)
-					return this.skip
+					current_root = current_root.add_child(`__anonymous-${++anonymous_layer_count}__`, location, true)
+					return
 				}
 			}
 		},
-		leave(node) {
-			if (is_layer(node)) {
-				if (node.prelude !== null && node.prelude.type === 'AtrulePrelude') {
-					let layer_names = get_layer_names(node.prelude)
-					for (let i = 0; i < layer_names.length; i++) {
-						current_stack.pop()
-					}
-				} else {
-					// pop the anonymous layer
-					current_stack.pop()
-				}
-			} else if (node.name.toLowerCase() === 'import') {
-				// clear the stack, imports can not be nested
-				current_stack.length = 0
+		leave: (node) => {
+			if (is_named_layer_atrule(node)) {
+				current_root = start_node
+			} else if (is_anonymous_layer_atrule(node)) {
+				current_root = start_node
 			}
-		},
+		}
 	})
 
 	return root.to_plain_object().children
