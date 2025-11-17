@@ -71,7 +71,18 @@ export function layer_tree_from_ast(ast) {
 						// @ts-expect-error CSSTree types are not updated yet in @types/css-tree
 						let prelude = csstree.findAll(node.prelude, n => n.type === 'Layer').map(n => n.name)
 						for (let name of prelude) {
-							root.add_child(current_stack, name, location)
+							// Split the layer name by dots to handle nested layers
+							let parts = name.split('.').map((/** @type {string} */ s) => s.trim())
+
+							// Ensure all parent layers exist and add them to the tree
+							for (let i = 0; i < parts.length; i++) {
+								let path = parts.slice(0, i)
+								let layerName = parts[i]
+								// Only add location to the final layer in dotted notation
+								// Create a new copy to avoid sharing references
+								let loc = i === parts.length - 1 ? {...location} : undefined
+								root.add_child(path, layerName, loc)
+							}
 						}
 					} else {
 						for (let layer_name of get_layer_names(node.prelude)) {
