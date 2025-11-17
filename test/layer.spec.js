@@ -9,7 +9,7 @@ test('single anonymous layer without body', () => {
 			name: '__anonymous-1__',
 			is_anonymous: true,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 7 }]
+			locations: [{ line: 1, column: 1, start: 0, end: 7 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -22,7 +22,7 @@ test('single anonymous layer with body', () => {
 			name: '__anonymous-1__',
 			is_anonymous: true,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 9 }]
+			locations: [{ line: 1, column: 1, start: 0, end: 9 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -35,7 +35,7 @@ test('single named layer without body', () => {
 			name: 'first',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 13 }]
+			locations: [{ line: 1, column: 1, start: 0, end: 13 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -48,7 +48,7 @@ test('single named layer with body', () => {
 			name: 'first',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 15 }]
+			locations: [{ line: 1, column: 1, start: 0, end: 15 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -61,13 +61,13 @@ test('multiple named layers in one line', () => {
 			name: 'first',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 21 }]
+			locations: [{ line: 1, column: 1, start: 0, end: 21 }],
 		},
 		{
 			name: 'second',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0, end: 21 }]
+			locations: [{ line: 1, column: 1, start: 0, end: 21 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -85,8 +85,8 @@ test('repeated use of the same layer name', () => {
 			children: [],
 			locations: [
 				{ line: 2, column: 3, start: 3, end: 18 },
-				{ line: 3, column: 3, start: 21, end: 36 }
-			]
+				{ line: 3, column: 3, start: 21, end: 36 },
+			],
 		},
 	]
 	assert.equal(actual, expected)
@@ -199,7 +199,7 @@ test('nested layers with anonymous layers and duplicate names', () => {
 					children: [],
 					locations: [{ line: 3, column: 4, start: 15, end: 30 }],
 				},
-			]
+			],
 		},
 		{
 			name: 'first',

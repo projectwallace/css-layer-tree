@@ -28,12 +28,16 @@ export class TreeNode {
 
 		// If the item already exists, add the location to its metadata
 		if (current.children.has(name)) {
-			// @ts-expect-error Apparently, TypeScript doesn't know that current is a TreeNode
-			current.children.get(name).locations.push(location)
+			if (location !== undefined) {
+				// @ts-expect-error Apparently, TypeScript doesn't know that current is a TreeNode
+				current.children.get(name).locations.push(location)
+			}
 		} else {
 			// Otherwise, create the item and add the location
 			const new_node = new TreeNode(name)
-			new_node.locations.push(location)
+			if (location !== undefined) {
+				new_node.locations.push(location)
+			}
 			new_node.is_anonymous = name.startsWith('__anonymous')
 			current.children.set(name, new_node)
 		}
@@ -56,8 +60,7 @@ export class TreeNode {
 			name: this.name,
 			is_anonymous: this.is_anonymous,
 			locations: this.locations,
-			children: Array
-				.from(this.children.values(), (child) => child.to_plain_object())
+			children: Array.from(this.children.values(), (child) => child.to_plain_object()),
 		}
 	}
 }
