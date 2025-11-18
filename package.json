@@ -54,5 +54,8 @@
     "useTabs": true,
     "printWidth": 140,
     "singleQuote": true
+  },
+  "dependencies": {
+    "@projectwallace/css-parser": "^0.1.0"
   }
 }

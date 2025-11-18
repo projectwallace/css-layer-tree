@@ -1,5 +1,5 @@
 import { TreeNode } from './TreeNode.js'
-import { NODE_AT_RULE, NODE_PRELUDE_IMPORT_LAYER, NODE_PRELUDE_LAYER_NAME, parse, walk_enter_leave } from '../../css-parser/dist/index.js'
+import { NODE_AT_RULE, NODE_PRELUDE_IMPORT_LAYER, NODE_PRELUDE_LAYER_NAME, parse, walk_enter_leave } from '@projectwallace/css-parser'
 
 /** @param {string} name */
 function get_layer_names(name) {
@@ -24,9 +24,7 @@ export function layer_tree_from_ast(ast) {
 			if (node.type !== NODE_AT_RULE) return
 
 			if (node.name === 'layer') {
-				let has_prelude = node.has_children && node.children.some((c) => c.type === NODE_PRELUDE_LAYER_NAME)
-
-				if (!has_prelude) {
+				if (!node.has_prelude) {
 					let name = get_anonymous_id()
 					root.add_child(current_stack, name, {
 						line: node.line,
@@ -85,8 +83,7 @@ export function layer_tree_from_ast(ast) {
 			if (node.type !== NODE_AT_RULE) return
 
 			if (node.name === 'layer') {
-				let has_prelude = node.has_children && node.children.some((c) => c.type === NODE_PRELUDE_LAYER_NAME)
-				if (has_prelude) {
+				if (node.has_prelude) {
 					let has_block = node.has_children && node.children.some((c) => c.type !== NODE_PRELUDE_LAYER_NAME)
 					if (has_block) {
 						let name = node.children.find((child) => child.type === NODE_PRELUDE_LAYER_NAME)
