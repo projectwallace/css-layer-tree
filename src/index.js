@@ -1,12 +1,12 @@
 import { TreeNode } from './TreeNode.js'
-import { NODE_AT_RULE, NODE_PRELUDE_IMPORT_LAYER, NODE_PRELUDE_LAYER_NAME, parse, walk_enter_leave } from '@projectwallace/css-parser'
+import { NODE_AT_RULE, NODE_PRELUDE_IMPORT_LAYER, NODE_PRELUDE_LAYER_NAME, parse, traverse } from '@projectwallace/css-parser'
 
 /** @param {string} name */
 function get_layer_names(name) {
 	return name.split('.').map((s) => s.trim())
 }
 
-/** @param {import('../../css-parser').CSSNode} ast */
+/** @param {import('@projectwallace/css-parser').CSSNode} ast */
 export function layer_tree_from_ast(ast) {
 	/** @type {string[]} */
 	let current_stack = []
@@ -19,7 +19,7 @@ export function layer_tree_from_ast(ast) {
 		return `__anonymous-${anonymous_counter}__`
 	}
 
-	walk_enter_leave(ast, {
+	traverse(ast, {
 		enter(node) {
 			if (node.type !== NODE_AT_RULE) return
 
