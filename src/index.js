@@ -6,6 +6,14 @@ function get_layer_names(name) {
 	return name.split('.').map((s) => s.trim())
 }
 
+/** @param {import('@projectwallace/css-parser').CSSNode} node */
+function create_location(node) {
+	return {
+		line: node.line,
+		start: node.offset,
+	}
+}
+
 /** @param {import('@projectwallace/css-parser').CSSNode} ast */
 export function layer_tree_from_ast(ast) {
 	/** @type {string[]} */
@@ -24,35 +32,26 @@ export function layer_tree_from_ast(ast) {
 			if (node.type !== NODE_AT_RULE) return
 
 			if (node.name === 'layer') {
-				if (!node.has_prelude) {
-					let name = get_anonymous_id()
-					root.add_child(current_stack, name, {
-						line: node.line,
-						start: node.offset,
-					})
-					current_stack.push(name)
-				} else {
+				if (node.has_prelude) {
 					let has_block = node.has_children && node.children.some((c) => c.type !== NODE_PRELUDE_LAYER_NAME)
 					if (!has_block) {
 						for (let child of node.children) {
 							if (child.type === NODE_PRELUDE_LAYER_NAME) {
-								root.add_child(current_stack, child.text, {
-									line: node.line,
-									start: node.offset,
-								})
+								root.add_child(current_stack, child.text, create_location(node))
 							}
 						}
 					} else {
 						for (let child of node.children) {
 							if (child.type === NODE_PRELUDE_LAYER_NAME) {
-								root.add_child(current_stack, child.text, {
-									line: node.line,
-									start: node.offset,
-								})
+								root.add_child(current_stack, child.text, create_location(node))
 								current_stack.push(child.text)
 							}
 						}
 					}
+				} else {
+					let name = get_anonymous_id()
+					root.add_child(current_stack, name, create_location(node))
+					current_stack.push(name)
 				}
 			} else if (node.name === 'import') {
 				// @import url("foo.css") layer(test);
@@ -62,19 +61,13 @@ export function layer_tree_from_ast(ast) {
 				if (layerNode) {
 					if (layerNode.name.trim()) {
 						for (let layer_name of get_layer_names(layerNode.name)) {
-							root.add_child(current_stack, layer_name, {
-								line: node.line,
-								start: node.offset,
-							})
+							root.add_child(current_stack, layer_name, create_location(node))
 							current_stack.push(layer_name)
 						}
 					} else {
 						// @import url("foo.css") layer;
 						let name = get_anonymous_id()
-						root.add_child([], name, {
-							line: node.line,
-							start: node.offset,
-						})
+						root.add_child([], name, create_location(node))
 					}
 				}
 			}
