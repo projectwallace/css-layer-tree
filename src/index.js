@@ -10,6 +10,7 @@ function get_layer_names(name) {
 function create_location(node) {
 	return {
 		line: node.line,
+		column: node.column,
 		start: node.offset,
 	}
 }

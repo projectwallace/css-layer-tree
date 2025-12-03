@@ -26,29 +26,29 @@ test('mixed imports and layers', () => {
 		{
 			name: '__anonymous-1__',
 			is_anonymous: true,
-			locations: [{ line: 2, start: 3 }],
+			locations: [{ line: 2, column: 3, start: 3 }],
 			children: [],
 		},
 		{
 			name: 'test',
 			is_anonymous: false,
-			locations: [{ line: 3, start: 36 }],
+			locations: [{ line: 3, column: 3, start: 36 }],
 			children: [],
 		},
 		{
 			name: 'anotherTest',
 			is_anonymous: false,
-			locations: [{ line: 4, start: 75 }],
+			locations: [{ line: 4, column: 3, start: 75 }],
 			children: [
 				{
 					name: 'moreTest',
 					is_anonymous: false,
-					locations: [{ line: 5, start: 99 }],
+					locations: [{ line: 5, column: 4, start: 99 }],
 					children: [
 						{
 							name: 'deepTest',
 							is_anonymous: false,
-							locations: [{ line: 6, start: 121 }],
+							locations: [{ line: 6, column: 5, start: 121 }],
 							children: [],
 						},
 					],
