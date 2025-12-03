@@ -58,7 +58,7 @@ test('mixed imports and layers', () => {
 		{
 			name: '__anonymous-2__',
 			is_anonymous: true,
-			locations: [{ line: 10, column: 3, start: 176, end: 185 }],
+			locations: [{ line: 10, column: 3, start: 176 }],
 			children: [],
 		},
 	]
@@ -76,24 +76,24 @@ test('the fokus.dev boilerplate', () => {
 		{
 			name: 'core',
 			is_anonymous: false,
-			locations: [{ line: 2, column: 3, start: 3, end: 49 }],
+			locations: [{ line: 2, column: 3, start: 3 }],
 			children: [
 				{
 					name: 'reset',
 					is_anonymous: false,
-					locations: [{ line: 3, column: 3, start: 52, end: 94 }],
+					locations: [{ line: 3, column: 3, start: 52 }],
 					children: [],
 				},
 				{
 					name: 'tokens',
 					is_anonymous: false,
-					locations: [{ line: 3, column: 3, start: 52, end: 94 }],
+					locations: [{ line: 3, column: 3, start: 52 }],
 					children: [],
 				},
 				{
 					name: 'base',
 					is_anonymous: false,
-					locations: [{ line: 3, column: 3, start: 52, end: 94 }],
+					locations: [{ line: 3, column: 3, start: 52 }],
 					children: [],
 				},
 			],
@@ -101,18 +101,18 @@ test('the fokus.dev boilerplate', () => {
 		{
 			name: 'third-party',
 			is_anonymous: false,
-			locations: [{ line: 2, column: 3, start: 3, end: 49 }],
+			locations: [{ line: 2, column: 3, start: 3 }],
 			children: [
 				{
 					name: 'imports',
 					is_anonymous: false,
-					locations: [{ line: 4, column: 3, start: 97, end: 147 }],
+					locations: [{ line: 4, column: 3, start: 97 }],
 					children: [],
 				},
 				{
 					name: 'overrides',
 					is_anonymous: false,
-					locations: [{ line: 4, column: 3, start: 97, end: 147 }],
+					locations: [{ line: 4, column: 3, start: 97 }],
 					children: [],
 				},
 			],
@@ -120,18 +120,18 @@ test('the fokus.dev boilerplate', () => {
 		{
 			name: 'components',
 			is_anonymous: false,
-			locations: [{ line: 2, column: 3, start: 3, end: 49 }],
+			locations: [{ line: 2, column: 3, start: 3 }],
 			children: [
 				{
 					name: 'base',
 					is_anonymous: false,
-					locations: [{ line: 5, column: 3, start: 150, end: 196 }],
+					locations: [{ line: 5, column: 3, start: 150 }],
 					children: [],
 				},
 				{
 					name: 'variations',
 					is_anonymous: false,
-					locations: [{ line: 5, column: 3, start: 150, end: 196 }],
+					locations: [{ line: 5, column: 3, start: 150 }],
 					children: [],
 				},
 			],
@@ -139,7 +139,7 @@ test('the fokus.dev boilerplate', () => {
 		{
 			name: 'utility',
 			is_anonymous: false,
-			locations: [{ line: 2, column: 3, start: 3, end: 49 }],
+			locations: [{ line: 2, column: 3, start: 3 }],
 			children: [],
 		},
 	]

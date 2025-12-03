@@ -33,12 +33,21 @@ export function layer_tree_from_ast(ast) {
 			if (node.type !== NODE_AT_RULE) return
 
 			if (node.name === 'layer') {
-				if (node.has_prelude) {
-					let has_block = node.has_children && node.children.some((c) => c.type !== NODE_PRELUDE_LAYER_NAME)
-					if (!has_block) {
-						for (let child of node.children) {
-							if (child.type === NODE_PRELUDE_LAYER_NAME) {
-								root.add_child(current_stack, child.text, create_location(node))
+				if (node.prelude !== null) {
+					let groups = node.prelude.split(',').map((s) => s.trim())
+					if (!node.has_block) {
+						for (let name of groups) {
+							let parts = get_layer_names(name)
+							// Ensure all parent layers exist and add them to the tree
+							for (let i = 0; i < parts.length; i++) {
+								let path = parts.slice(0, i)
+								let layer_name = parts[i]
+								if (layer_name) {
+									// Only add location to the final layer in dotted notation
+									// Create a new copy to avoid sharing references
+									let loc = i === parts.length - 1 ? create_location(node) : undefined
+									root.add_child(path, layer_name, loc)
+								}
 							}
 						}
 					} else {
