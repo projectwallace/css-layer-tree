@@ -56,6 +56,6 @@
     "singleQuote": true
   },
   "dependencies": {
-    "@projectwallace/css-parser": "^0.6.3"
+    "@projectwallace/css-parser": "^0.8.0"
   }
 }

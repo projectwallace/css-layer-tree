@@ -9,7 +9,7 @@ test('single anonymous layer without body', () => {
 			name: '__anonymous-1__',
 			is_anonymous: true,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 7 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -22,7 +22,7 @@ test('single anonymous layer with body', () => {
 			name: '__anonymous-1__',
 			is_anonymous: true,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 9 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -35,7 +35,7 @@ test('single named layer without body', () => {
 			name: 'first',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 13 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -48,7 +48,7 @@ test('single named layer with body', () => {
 			name: 'first',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 15 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -61,13 +61,13 @@ test('multiple named layers in one line', () => {
 			name: 'first',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 21 }],
 		},
 		{
 			name: 'second',
 			is_anonymous: false,
 			children: [],
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 21 }],
 		},
 	]
 	assert.equal(actual, expected)
@@ -84,8 +84,8 @@ test('repeated use of the same layer name', () => {
 			is_anonymous: false,
 			children: [],
 			locations: [
-				{ line: 2, column: 3, start: 3 },
-				{ line: 3, column: 3, start: 21 },
+				{ line: 2, column: 3, start: 3, end: 18 },
+				{ line: 3, column: 3, start: 21, end: 36 },
 			],
 		},
 	]
@@ -106,23 +106,23 @@ test('nested layers', () => {
 		{
 			name: 'first',
 			is_anonymous: false,
-			locations: [{ line: 2, column: 3, start: 3 }],
+			locations: [{ line: 2, column: 3, start: 3, end: 104 }],
 			children: [
 				{
 					name: 'second',
 					is_anonymous: false,
-					locations: [{ line: 3, column: 4, start: 21 }],
+					locations: [{ line: 3, column: 4, start: 21, end: 100 }],
 					children: [
 						{
 							name: 'third',
 							is_anonymous: false,
-							locations: [{ line: 4, column: 5, start: 41 }],
+							locations: [{ line: 4, column: 5, start: 41, end: 56 }],
 							children: [],
 						},
 						{
 							name: 'fourth',
 							is_anonymous: false,
-							locations: [{ line: 6, column: 5, start: 79 }],
+							locations: [{ line: 6, column: 5, start: 79, end: 95 }],
 							children: [],
 						},
 					],
@@ -143,13 +143,13 @@ test('nested layers with anonymous layers', () => {
 		{
 			name: '__anonymous-1__',
 			is_anonymous: true,
-			locations: [{ line: 2, column: 3, start: 3 }],
+			locations: [{ line: 2, column: 3, start: 3, end: 28 }],
 			children: [
 				{
 					name: '__anonymous-2__',
 					is_anonymous: true,
 					children: [],
-					locations: [{ line: 3, column: 4, start: 15 }],
+					locations: [{ line: 3, column: 4, start: 15, end: 24 }],
 				},
 			],
 		},
@@ -166,13 +166,13 @@ test('consecutive anonymous layers', () => {
 		{
 			name: '__anonymous-1__',
 			is_anonymous: true,
-			locations: [{ line: 2, column: 3, start: 3 }],
+			locations: [{ line: 2, column: 3, start: 3, end: 12 }],
 			children: [],
 		},
 		{
 			name: '__anonymous-2__',
 			is_anonymous: true,
-			locations: [{ line: 3, column: 3, start: 15 }],
+			locations: [{ line: 3, column: 3, start: 15, end: 24 }],
 			children: [],
 		},
 	]
@@ -191,20 +191,20 @@ test('nested layers with anonymous layers and duplicate names', () => {
 		{
 			name: '__anonymous-1__',
 			is_anonymous: true,
-			locations: [{ line: 2, column: 3, start: 3 }],
+			locations: [{ line: 2, column: 3, start: 3, end: 34 }],
 			children: [
 				{
 					name: 'first',
 					is_anonymous: false,
 					children: [],
-					locations: [{ line: 3, column: 4, start: 15 }],
+					locations: [{ line: 3, column: 4, start: 15, end: 30 }],
 				},
 			],
 		},
 		{
 			name: 'first',
 			is_anonymous: false,
-			locations: [{ line: 6, column: 3, start: 38 }],
+			locations: [{ line: 6, column: 3, start: 38, end: 53 }],
 			children: [],
 		},
 	]

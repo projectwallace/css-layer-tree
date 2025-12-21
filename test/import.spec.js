@@ -8,7 +8,7 @@ test('@import url() layer', () => {
 		{
 			name: '__anonymous-1__',
 			is_anonymous: true,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 29 }],
 			children: [],
 		},
 	]
@@ -21,7 +21,7 @@ test('@import url() LAYER', () => {
 		{
 			name: '__anonymous-1__',
 			is_anonymous: true,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 29 }],
 			children: [],
 		},
 	]
@@ -34,7 +34,7 @@ test('@import url() layer(named)', () => {
 		{
 			name: 'named',
 			is_anonymous: false,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 36 }],
 			children: [],
 		},
 	]
@@ -47,7 +47,7 @@ test('@import url() LAYER(named)', () => {
 		{
 			name: 'named',
 			is_anonymous: false,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 36 }],
 			children: [],
 		},
 	]
@@ -60,12 +60,12 @@ test('@import url() layer(named.nested)', () => {
 		{
 			name: 'named',
 			is_anonymous: false,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 43 }],
 			children: [
 				{
 					name: 'nested',
 					is_anonymous: false,
-					locations: [{ line: 1, column: 1, start: 0 }],
+					locations: [{ line: 1, column: 1, start: 0, end: 43 }],
 					children: [],
 				},
 			],
@@ -80,12 +80,12 @@ test('@import url() layer(named.nested     )', () => {
 		{
 			name: 'named',
 			is_anonymous: false,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 48 }],
 			children: [
 				{
 					name: 'nested',
 					is_anonymous: false,
-					locations: [{ line: 1, column: 1, start: 0 }],
+					locations: [{ line: 1, column: 1, start: 0, end: 48 }],
 					children: [],
 				},
 			],
@@ -100,12 +100,12 @@ test('@import url() layer(/* test */named.nested     )', () => {
 		{
 			name: 'named',
 			is_anonymous: false,
-			locations: [{ line: 1, column: 1, start: 0 }],
+			locations: [{ line: 1, column: 1, start: 0, end: 58 }],
 			children: [
 				{
 					name: 'nested',
 					is_anonymous: false,
-					locations: [{ line: 1, column: 1, start: 0 }],
+					locations: [{ line: 1, column: 1, start: 0, end: 58 }],
 					children: [],
 				},
 			],

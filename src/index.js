@@ -1,5 +1,5 @@
 import { TreeNode } from './TreeNode.js'
-import { NODE_AT_RULE, NODE_PRELUDE_IMPORT_LAYER, NODE_PRELUDE_LAYER_NAME, parse, traverse } from '@projectwallace/css-parser'
+import { AT_RULE, LAYER_NAME, parse, traverse } from '@projectwallace/css-parser'
 
 /** @param {string} name */
 function get_layer_names(name) {
@@ -11,7 +11,8 @@ function create_location(node) {
 	return {
 		line: node.line,
 		column: node.column,
-		start: node.offset,
+		start: node.start,
+		end: node.end,
 	}
 }
 
@@ -30,7 +31,7 @@ export function layer_tree_from_ast(ast) {
 
 	traverse(ast, {
 		enter(node) {
-			if (node.type !== NODE_AT_RULE) return
+			if (node.type !== AT_RULE) return
 
 			if (node.name === 'layer') {
 				if (node.prelude !== null) {
@@ -52,7 +53,7 @@ export function layer_tree_from_ast(ast) {
 						}
 					} else {
 						for (let child of node.children) {
-							if (child.type === NODE_PRELUDE_LAYER_NAME) {
+							if (child.type === LAYER_NAME) {
 								root.add_child(current_stack, child.text, create_location(node))
 								current_stack.push(child.text)
 							}
@@ -67,7 +68,7 @@ export function layer_tree_from_ast(ast) {
 				// @import url("foo.css") layer(test);
 				// OR
 				// @import url("foo.css") layer(test.nested);
-				let layerNode = node.children.find((child) => child.type === NODE_PRELUDE_IMPORT_LAYER)
+				let layerNode = node.children.find((child) => child.type === LAYER_NAME)
 				if (layerNode) {
 					if (layerNode.name.trim()) {
 						for (let layer_name of get_layer_names(layerNode.name)) {
@@ -83,13 +84,13 @@ export function layer_tree_from_ast(ast) {
 			}
 		},
 		leave(node) {
-			if (node.type !== NODE_AT_RULE) return
+			if (node.type !== AT_RULE) return
 
 			if (node.name === 'layer') {
 				if (node.has_prelude) {
-					let has_block = node.has_children && node.children.some((c) => c.type !== NODE_PRELUDE_LAYER_NAME)
+					let has_block = node.has_children && node.children.some((c) => c.type !== LAYER_NAME)
 					if (has_block) {
-						let name = node.children.find((child) => child.type === NODE_PRELUDE_LAYER_NAME)
+						let name = node.children.find((child) => child.type === LAYER_NAME)
 						if (name) {
 							let layer_names = get_layer_names(name.text)
 							for (let i = 0; i < layer_names.length; i++) {
