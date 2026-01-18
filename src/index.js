@@ -52,12 +52,24 @@ export function layer_tree_from_ast(ast) {
 							}
 						}
 					} else {
+						// prelude.children contains the individual segments for dotted notation
+						// e.g., @layer base.props {} has children: ["base", "props"]
+						let layer_names = []
 						for (let child of node.prelude.children) {
 							if (child.type === LAYER_NAME) {
-								root.add_child(current_stack, child.text, create_location(node))
-								current_stack.push(child.text)
+								layer_names.push(child.text)
 							}
 						}
+						// Add each layer in the hierarchy
+						for (let i = 0; i < layer_names.length; i++) {
+							let layer_name = layer_names[i]
+							if (!layer_name) continue
+							let path = layer_names.slice(0, i)
+							let loc = i === layer_names.length - 1 ? create_location(node) : undefined
+							root.add_child(current_stack.concat(path), layer_name, loc)
+						}
+						// Push all layers to the stack
+						current_stack.push(...layer_names)
 					}
 				} else {
 					let name = get_anonymous_id()
@@ -90,14 +102,16 @@ export function layer_tree_from_ast(ast) {
 
 			if (node.name === 'layer') {
 				if (node.prelude && node.has_block) {
+					// Count how many layer segments we pushed
+					let layer_count = 0
 					for (let child of node.prelude.children) {
 						if (child.type === LAYER_NAME) {
-							let layer_names = get_layer_names(child.text)
-							for (let i = 0; i < layer_names.length; i++) {
-								current_stack.pop()
-							}
-							break
+							layer_count++
 						}
+					}
+					// Pop all of them
+					for (let i = 0; i < layer_count; i++) {
+						current_stack.pop()
 					}
 				} else {
 					// pop the anonymous layer

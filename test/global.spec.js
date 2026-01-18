@@ -146,4 +146,238 @@ test('the fokus.dev boilerplate', () => {
 	assert.equal(actual, expected)
 })
 
+test('nerdy.dev', () => {
+	let actual = layer_tree(`
+		@layer base.props {}
+		@layer base.normalize {}
+		@layer base.normalize {}
+		@layer base.theme {}
+		@layer base.utilities {}
+		@layer base.containers {}
+		@layer base.nojs {}
+		@layer base.normalize {}
+
+		@layer components.links {}
+		@layer components.toast {}
+		@layer components.markdown {}
+		@layer components.syntax {}
+		@layer components.p3 {}
+		@layer components.quote {}
+		@layer components.fresh {}
+
+		@layer overrides {}
+	`)
+	let expected = [
+		{
+			name: 'base',
+			is_anonymous: false,
+			locations: [],
+			children: [
+				{
+					name: 'props',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							start: 3,
+							end: 23,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'normalize',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 3,
+							column: 3,
+							start: 26,
+							end: 50,
+						},
+						{
+							line: 4,
+							column: 3,
+							start: 53,
+							end: 77,
+						},
+						{
+							line: 9,
+							column: 3,
+							start: 180,
+							end: 204,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'theme',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 5,
+							column: 3,
+							start: 80,
+							end: 100,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'utilities',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 6,
+							column: 3,
+							start: 103,
+							end: 127,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'containers',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 7,
+							column: 3,
+							start: 130,
+							end: 155,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'nojs',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 8,
+							column: 3,
+							start: 158,
+							end: 177,
+						},
+					],
+					children: [],
+				},
+			],
+		},
+		{
+			name: 'components',
+			is_anonymous: false,
+			locations: [],
+			children: [
+				{
+					name: 'links',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 11,
+							column: 3,
+							start: 208,
+							end: 234,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'toast',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 12,
+							column: 3,
+							start: 237,
+							end: 263,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'markdown',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 13,
+							column: 3,
+							start: 266,
+							end: 295,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'syntax',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 14,
+							column: 3,
+							start: 298,
+							end: 325,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'p3',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 15,
+							column: 3,
+							start: 328,
+							end: 351,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'quote',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 16,
+							column: 3,
+							start: 354,
+							end: 380,
+						},
+					],
+					children: [],
+				},
+				{
+					name: 'fresh',
+					is_anonymous: false,
+					locations: [
+						{
+							line: 17,
+							column: 3,
+							start: 383,
+							end: 409,
+						},
+					],
+					children: [],
+				},
+			],
+		},
+		{
+			name: 'overrides',
+			is_anonymous: false,
+			locations: [
+				{
+					line: 19,
+					column: 3,
+					start: 413,
+					end: 432,
+				},
+			],
+			children: [],
+		},
+	]
+	assert.equal(actual, expected)
+})
+
 test.run()
