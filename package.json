@@ -1,61 +1,61 @@
 {
-	"name": "@projectwallace/css-layer-tree",
-	"version": "2.0.3-beta.1",
-	"description": "Discover the composition of your CSS @layers in a tree-based format.",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/projectwallace/css-layer-tree.git"
-	},
-	"author": {
-		"name": "Bart Veneman"
-	},
-	"homepage": "https://github.com/projectwallace/css-layer-tree",
-	"issues": "https://github.com/projectwallace/css-layer-tree/issues",
-	"license": "MIT",
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"type": "module",
-	"main": "./dist/css-layer-tree.js",
-	"types": "./index.d.ts",
-	"exports": {
-		"types": "./index.d.ts",
-		"default": "./dist/css-layer-tree.js"
-	},
-	"scripts": {
-		"build": "vite build",
-		"test": "c8 --reporter=lcov uvu",
-		"check": "tsc --noEmit",
-		"prettier": "prettier --check src/**/*.js test/**/*.js"
-	},
-	"devDependencies": {
-		"@codecov/vite-plugin": "^1.2.1",
-		"c8": "^10.1.2",
-		"prettier": "^3.3.3",
-		"typescript": "5.4.2",
-		"uvu": "^0.5.6",
-		"vite": "^5.4.10"
-	},
-	"files": [
-		"dist",
-		"index.d.ts"
-	],
-	"keywords": [
-		"css",
-		"stylesheet",
-		"layer",
-		"layers",
-		"composition",
-		"architecture",
-		"tree"
-	],
-	"prettier": {
-		"semi": false,
-		"useTabs": true,
-		"printWidth": 140,
-		"singleQuote": true
-	},
-	"dependencies": {
-		"@projectwallace/css-parser": "^0.12.2"
-	}
+  "name": "@projectwallace/css-layer-tree",
+  "version": "2.0.2",
+  "description": "Discover the composition of your CSS @layers in a tree-based format.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/projectwallace/css-layer-tree.git"
+  },
+  "author": {
+    "name": "Bart Veneman"
+  },
+  "homepage": "https://github.com/projectwallace/css-layer-tree",
+  "issues": "https://github.com/projectwallace/css-layer-tree/issues",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "type": "module",
+  "main": "./dist/css-layer-tree.js",
+  "types": "./index.d.ts",
+  "exports": {
+    "types": "./index.d.ts",
+    "default": "./dist/css-layer-tree.js"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "c8 --reporter=lcov uvu",
+    "check": "tsc --noEmit",
+    "prettier": "prettier --check src/**/*.js test/**/*.js"
+  },
+  "devDependencies": {
+    "@codecov/vite-plugin": "^1.2.1",
+    "c8": "^10.1.2",
+    "prettier": "^3.3.3",
+    "typescript": "5.4.2",
+    "uvu": "^0.5.6",
+    "vite": "^5.4.10"
+  },
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
+  "keywords": [
+    "css",
+    "stylesheet",
+    "layer",
+    "layers",
+    "composition",
+    "architecture",
+    "tree"
+  ],
+  "prettier": {
+    "semi": false,
+    "useTabs": true,
+    "printWidth": 140,
+    "singleQuote": true
+  },
+  "dependencies": {
+    "@projectwallace/css-parser": "^0.12.2"
+  }
 }
