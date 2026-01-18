@@ -34,8 +34,8 @@ export function layer_tree_from_ast(ast) {
 			if (node.type !== AT_RULE) return
 
 			if (node.name === 'layer') {
-				if (node.prelude !== null) {
-					let groups = node.prelude.split(',').map((s) => s.trim())
+				if (node.prelude) {
+					let groups = node.prelude.text.split(',').map((s) => s.trim())
 					if (!node.has_block) {
 						for (let name of groups) {
 							let parts = get_layer_names(name)
@@ -52,7 +52,7 @@ export function layer_tree_from_ast(ast) {
 							}
 						}
 					} else {
-						for (let child of node.children) {
+						for (let child of node.prelude.children) {
 							if (child.type === LAYER_NAME) {
 								root.add_child(current_stack, child.text, create_location(node))
 								current_stack.push(child.text)
@@ -64,21 +64,23 @@ export function layer_tree_from_ast(ast) {
 					root.add_child(current_stack, name, create_location(node))
 					current_stack.push(name)
 				}
-			} else if (node.name === 'import') {
+			} else if (node.name === 'import' && node.prelude) {
 				// @import url("foo.css") layer(test);
 				// OR
 				// @import url("foo.css") layer(test.nested);
-				let layerNode = node.children.find((child) => child.type === LAYER_NAME)
-				if (layerNode) {
-					if (layerNode.name.trim()) {
-						for (let layer_name of get_layer_names(layerNode.name)) {
-							root.add_child(current_stack, layer_name, create_location(node))
-							current_stack.push(layer_name)
+				for (let child of node.prelude.children) {
+					if (child.type === LAYER_NAME) {
+						if (child.name.trim()) {
+							for (let layer_name of get_layer_names(child.name)) {
+								root.add_child(current_stack, layer_name, create_location(node))
+								current_stack.push(layer_name)
+							}
+						} else {
+							// @import url("foo.css") layer;
+							let name = get_anonymous_id()
+							root.add_child([], name, create_location(node))
 						}
-					} else {
-						// @import url("foo.css") layer;
-						let name = get_anonymous_id()
-						root.add_child([], name, create_location(node))
+						break
 					}
 				}
 			}
@@ -87,15 +89,14 @@ export function layer_tree_from_ast(ast) {
 			if (node.type !== AT_RULE) return
 
 			if (node.name === 'layer') {
-				if (node.has_prelude) {
-					let has_block = node.has_children && node.children.some((c) => c.type !== LAYER_NAME)
-					if (has_block) {
-						let name = node.children.find((child) => child.type === LAYER_NAME)
-						if (name) {
-							let layer_names = get_layer_names(name.text)
+				if (node.prelude && node.has_block) {
+					for (let child of node.prelude.children) {
+						if (child.type === LAYER_NAME) {
+							let layer_names = get_layer_names(child.text)
 							for (let i = 0; i < layer_names.length; i++) {
 								current_stack.pop()
 							}
+							break
 						}
 					}
 				} else {
@@ -119,7 +120,6 @@ export function layer_tree(css) {
 	let ast = parse(css, {
 		parse_selectors: false,
 		parse_values: false,
-		skip_comments: true,
 	})
 
 	return layer_tree_from_ast(ast)
