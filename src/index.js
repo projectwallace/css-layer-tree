@@ -82,7 +82,7 @@ export function layer_tree_from_ast(ast) {
 				// @import url("foo.css") layer(test.nested);
 				for (let child of node.prelude.children) {
 					if (child.type === LAYER_NAME) {
-						if (child.name.trim()) {
+						if (child.name?.trim()) {
 							for (let layer_name of get_layer_names(child.name)) {
 								root.add_child(current_stack, layer_name, create_location(node))
 								current_stack.push(layer_name)
