@@ -1,6 +1,5 @@
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-import { layer_tree } from '../src/index.js'
+import { test, expect } from 'vitest'
+import { layer_tree } from '../src/index.ts'
 
 test('@import url() layer', () => {
 	let actual = layer_tree('@import url("foo.css") layer;')
@@ -12,7 +11,7 @@ test('@import url() layer', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('@import url() LAYER', () => {
@@ -25,7 +24,7 @@ test('@import url() LAYER', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('@import url() layer(named)', () => {
@@ -38,7 +37,7 @@ test('@import url() layer(named)', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('@import url() LAYER(named)', () => {
@@ -51,7 +50,7 @@ test('@import url() LAYER(named)', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('@import url() layer(named.nested)', () => {
@@ -71,7 +70,7 @@ test('@import url() layer(named.nested)', () => {
 			],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('@import url() layer(named.nested     )', () => {
@@ -91,7 +90,7 @@ test('@import url() layer(named.nested     )', () => {
 			],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('@import url() layer(/* test */named.nested     )', () => {
@@ -111,7 +110,5 @@ test('@import url() layer(/* test */named.nested     )', () => {
 			],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
-
-test.run()

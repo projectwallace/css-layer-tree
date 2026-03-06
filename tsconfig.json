@@ -4,8 +4,6 @@
 		"skipLibCheck": true,
 		"target": "es2022",
 		"verbatimModuleSyntax": true,
-		"allowJs": true,
-		"checkJs": true,
 		"moduleDetection": "force",
 
 		// Strictness
@@ -15,11 +13,11 @@
 		// Type checking, not transpiling
 		"module": "ESNext",
 		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
 		"allowSyntheticDefaultImports": true,
 		"noEmit": true,
 
-		// Code runs in the DOM
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"lib": ["ES2022"],
 	},
 	"include": [
 		"src/",

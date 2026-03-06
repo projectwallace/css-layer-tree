@@ -17,28 +17,29 @@
 	},
 	"type": "module",
 	"main": "./dist/css-layer-tree.js",
-	"types": "./index.d.ts",
+	"types": "./dist/index.d.ts",
 	"exports": {
-		"types": "./index.d.ts",
+		"types": "./dist/index.d.ts",
 		"default": "./dist/css-layer-tree.js"
 	},
 	"scripts": {
 		"build": "vite build",
-		"test": "c8 --reporter=lcov uvu",
+		"test": "vitest run",
 		"check": "tsc --noEmit",
-		"prettier": "prettier --check src/**/*.js test/**/*.js"
+		"prettier": "prettier --check src/**/*.ts test/**/*.ts",
+		"lint-package": "publint"
 	},
 	"devDependencies": {
 		"@codecov/vite-plugin": "^1.2.1",
-		"c8": "^10.1.2",
 		"prettier": "^3.3.3",
+		"publint": "^0.3.18",
 		"typescript": "5.4.2",
-		"uvu": "^0.5.6",
-		"vite": "^5.4.10"
+		"vite": "^5.4.10",
+		"vite-plugin-dts": "^4.0.0",
+		"vitest": "^3.0.0"
 	},
 	"files": [
-		"dist",
-		"index.d.ts"
+		"dist"
 	],
 	"keywords": [
 		"css",
