@@ -30,7 +30,7 @@
 	},
 	"devDependencies": {
 		"@codecov/vite-plugin": "^1.2.1",
-		"c8": "^10.1.2",
+		"c8": "^11.0.0",
 		"prettier": "^3.3.3",
 		"typescript": "5.4.2",
 		"uvu": "^0.5.6",
