@@ -26,11 +26,12 @@
 		"build": "vite build",
 		"test": "vitest run",
 		"check": "tsc --noEmit",
-		"prettier": "prettier --check src/**/*.ts test/**/*.ts",
+		"lint": "oxlint",
 		"lint-package": "publint"
 	},
 	"devDependencies": {
 		"@codecov/vite-plugin": "^1.2.1",
+		"oxlint": "^1.51.0",
 		"prettier": "^3.3.3",
 		"publint": "^0.3.18",
 		"typescript": "5.4.2",
