@@ -1,13 +1,12 @@
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-import { layer_tree } from '../src/index.js'
+import { test, expect } from 'vitest'
+import { layer_tree } from '../src/index.ts'
 
 test('handles empty input', () => {
-	assert.equal(layer_tree(''), [])
+	expect(layer_tree('')).toEqual([])
 })
 
 test('handles CSS without layers', () => {
-	assert.equal(layer_tree('@media all { body { color: red; } }'), [])
+	expect(layer_tree('@media all { body { color: red; } }')).toEqual([])
 })
 
 test('mixed imports and layers', () => {
@@ -62,7 +61,7 @@ test('mixed imports and layers', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('the fokus.dev boilerplate', () => {
@@ -143,7 +142,7 @@ test('the fokus.dev boilerplate', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('nerdy.dev', () => {
@@ -377,7 +376,5 @@ test('nerdy.dev', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
-
-test.run()

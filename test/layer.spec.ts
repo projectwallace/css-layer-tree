@@ -1,6 +1,5 @@
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-import { layer_tree } from '../src/index.js'
+import { test, expect } from 'vitest'
+import { layer_tree } from '../src/index.ts'
 
 test('single anonymous layer without body', () => {
 	let actual = layer_tree('@layer;')
@@ -12,7 +11,7 @@ test('single anonymous layer without body', () => {
 			locations: [{ line: 1, column: 1, start: 0, end: 7 }],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('single anonymous layer with body', () => {
@@ -25,7 +24,7 @@ test('single anonymous layer with body', () => {
 			locations: [{ line: 1, column: 1, start: 0, end: 9 }],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('single named layer without body', () => {
@@ -38,7 +37,7 @@ test('single named layer without body', () => {
 			locations: [{ line: 1, column: 1, start: 0, end: 13 }],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('single named layer with body', () => {
@@ -51,7 +50,7 @@ test('single named layer with body', () => {
 			locations: [{ line: 1, column: 1, start: 0, end: 15 }],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('multiple named layers in one line', () => {
@@ -70,7 +69,7 @@ test('multiple named layers in one line', () => {
 			locations: [{ line: 1, column: 1, start: 0, end: 21 }],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('repeated use of the same layer name', () => {
@@ -89,7 +88,7 @@ test('repeated use of the same layer name', () => {
 			],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('nested layers', () => {
@@ -130,7 +129,7 @@ test('nested layers', () => {
 			],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('nested layers with anonymous layers', () => {
@@ -154,7 +153,7 @@ test('nested layers with anonymous layers', () => {
 			],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('consecutive anonymous layers', () => {
@@ -176,7 +175,7 @@ test('consecutive anonymous layers', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
 
 test('nested layers with anonymous layers and duplicate names', () => {
@@ -208,7 +207,5 @@ test('nested layers with anonymous layers and duplicate names', () => {
 			children: [],
 		},
 	]
-	assert.equal(actual, expected)
+	expect(actual).toEqual(expected)
 })
-
-test.run()

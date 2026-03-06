@@ -1,13 +1,13 @@
-import { TreeNode } from './TreeNode.js'
-import { AT_RULE, LAYER_NAME, parse, traverse } from '@projectwallace/css-parser'
+import { LayerTreeNode, type TreeNode, type Location } from './TreeNode.ts'
+import { AT_RULE, LAYER_NAME, parse, traverse, type CSSNode } from '@projectwallace/css-parser'
 
-/** @param {string} name */
-function get_layer_names(name) {
+export type { Location, TreeNode } from './TreeNode.ts'
+
+function get_layer_names(name: string): string[] {
 	return name.split('.').map((s) => s.trim())
 }
 
-/** @param {import('@projectwallace/css-parser').CSSNode} node */
-function create_location(node) {
+function create_location(node: CSSNode): Location {
 	return {
 		line: node.line,
 		column: node.column,
@@ -16,15 +16,12 @@ function create_location(node) {
 	}
 }
 
-/** @param {import('@projectwallace/css-parser').CSSNode} ast */
-export function layer_tree_from_ast(ast) {
-	/** @type {string[]} */
-	let current_stack = []
-	let root = new TreeNode('root')
+export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
+	let current_stack: string[] = []
+	let root = new LayerTreeNode('root')
 	let anonymous_counter = 0
 
-	/** @returns {string} */
-	function get_anonymous_id() {
+	function get_anonymous_id(): string {
 		anonymous_counter++
 		return `__anonymous-${anonymous_counter}__`
 	}
@@ -54,7 +51,7 @@ export function layer_tree_from_ast(ast) {
 					} else {
 						// prelude.children contains the individual segments for dotted notation
 						// e.g., @layer base.props {} has children: ["base", "props"]
-						let layer_names = []
+						let layer_names: string[] = []
 						for (let child of node.prelude.children) {
 							if (child.type === LAYER_NAME) {
 								layer_names.push(child.text)
@@ -127,10 +124,7 @@ export function layer_tree_from_ast(ast) {
 	return root.to_plain_object().children
 }
 
-/**
- * @param {string} css
- */
-export function layer_tree(css) {
+export function layer_tree(css: string): TreeNode[] {
 	let ast = parse(css, {
 		parse_selectors: false,
 		parse_values: false,
