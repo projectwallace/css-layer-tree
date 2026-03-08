@@ -16,28 +16,26 @@
 		"node": ">=18.0.0"
 	},
 	"type": "module",
-	"main": "./dist/css-layer-tree.js",
-	"types": "./dist/index.d.ts",
+	"main": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
 	"exports": {
-		"types": "./dist/index.d.ts",
-		"default": "./dist/css-layer-tree.js"
+		"types": "./dist/index.d.mts",
+		"default": "./dist/index.mjs"
 	},
 	"scripts": {
-		"build": "vite build",
-		"test": "vitest run",
+		"build": "tsdown",
+		"test": "vitest",
 		"check": "tsc --noEmit",
-		"lint": "oxlint",
-		"lint-package": "publint"
+		"lint": "oxlint"
 	},
 	"devDependencies": {
-		"@codecov/vite-plugin": "^1.2.1",
+		"@codecov/rollup-plugin": "^1.9.1",
 		"oxlint": "^1.51.0",
 		"prettier": "^3.3.3",
 		"publint": "^0.3.18",
+		"tsdown": "^0.21.0",
 		"typescript": "5.9.3",
-		"vite": "^5.4.10",
-		"vite-plugin-dts": "^4.0.0",
-		"vitest": "^3.0.0"
+		"vitest": "^4.0.0"
 	},
 	"files": [
 		"dist"
