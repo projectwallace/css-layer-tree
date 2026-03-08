@@ -24,7 +24,7 @@
 	},
 	"scripts": {
 		"build": "tsdown",
-		"test": "vitest run",
+		"test": "vitest",
 		"check": "tsc --noEmit",
 		"lint": "oxlint"
 	},
@@ -34,7 +34,7 @@
 		"prettier": "^3.3.3",
 		"tsdown": "^0.21.0",
 		"typescript": "5.9.3",
-		"vitest": "^3.0.0"
+		"vitest": "^4.0.0"
 	},
 	"files": [
 		"dist"
