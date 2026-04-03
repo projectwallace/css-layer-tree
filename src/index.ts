@@ -1,5 +1,5 @@
 import { LayerTreeNode, type TreeNode, type Location } from './TreeNode.ts'
-import { AT_RULE, LAYER_NAME, parse, traverse, type CSSNode } from '@projectwallace/css-parser'
+import { parse, traverse, is_atrule, type CSSNode, is_layer_name, is_atrule_prelude } from '@projectwallace/css-parser'
 
 export type { Location, TreeNode } from './TreeNode.ts'
 
@@ -28,10 +28,10 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 
 	traverse(ast, {
 		enter(node) {
-			if (node.type !== AT_RULE) return
+			if (!is_atrule(node)) return
 
 			if (node.name === 'layer') {
-				if (node.prelude) {
+				if (node.has_prelude) {
 					let groups = node.prelude.text.split(',').map((s) => s.trim())
 					if (!node.has_block) {
 						for (let name of groups) {
@@ -52,9 +52,11 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 						// prelude.children contains the individual segments for dotted notation
 						// e.g., @layer base.props {} has children: ["base", "props"]
 						let layer_names: string[] = []
-						for (let child of node.prelude.children) {
-							if (child.type === LAYER_NAME) {
-								layer_names.push(child.text)
+						if (is_atrule_prelude(node.prelude)) {
+							for (let child of node.prelude.children) {
+								if (is_layer_name(child)) {
+									layer_names.push(child.name)
+								}
 							}
 						}
 						// Add each layer in the hierarchy
@@ -73,13 +75,13 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 					root.add_child(current_stack, name, create_location(node))
 					current_stack.push(name)
 				}
-			} else if (node.name === 'import' && node.prelude) {
+			} else if (node.name === 'import' && node.has_prelude && is_atrule_prelude(node.prelude)) {
 				// @import url("foo.css") layer(test);
 				// OR
 				// @import url("foo.css") layer(test.nested);
 				for (let child of node.prelude.children) {
-					if (child.type === LAYER_NAME) {
-						if (child.name?.trim()) {
+					if (is_layer_name(child)) {
+						if (child.name.trim()) {
 							for (let layer_name of get_layer_names(child.name)) {
 								root.add_child(current_stack, layer_name, create_location(node))
 								current_stack.push(layer_name)
@@ -95,14 +97,14 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 			}
 		},
 		leave(node) {
-			if (node.type !== AT_RULE) return
+			if (!is_atrule(node)) return
 
 			if (node.name === 'layer') {
-				if (node.prelude && node.has_block) {
+				if (node.has_prelude && node.has_block && is_atrule_prelude(node.prelude)) {
 					// Count how many layer segments we pushed
 					let layer_count = 0
 					for (let child of node.prelude.children) {
-						if (child.type === LAYER_NAME) {
+						if (is_layer_name(child)) {
 							layer_count++
 						}
 					}
