@@ -12,8 +12,10 @@
 	"homepage": "https://github.com/projectwallace/css-layer-tree",
 	"issues": "https://github.com/projectwallace/css-layer-tree/issues",
 	"license": "MIT",
+	"packageManager": "pnpm@10.30.3",
 	"engines": {
-		"node": ">=18.0.0"
+		"node": ">=18.0.0",
+		"pnpm": ">=10.0.0"
 	},
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -57,5 +59,12 @@
 	},
 	"dependencies": {
 		"@projectwallace/css-parser": "~0.14.0"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": ["esbuild"]
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
 	}
 }
