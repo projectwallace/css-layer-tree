@@ -31,11 +31,11 @@
 		"lint": "oxlint"
 	},
 	"devDependencies": {
-		"@codecov/rollup-plugin": "^1.9.1",
+		"@codecov/rollup-plugin": "^2.0.1",
 		"oxlint": "^1.51.0",
 		"prettier": "^3.3.3",
 		"publint": "^0.3.18",
-		"tsdown": "^0.21.0",
+		"tsdown": "^0.22.0",
 		"typescript": "6.0.3",
 		"vitest": "^4.0.0"
 	},
