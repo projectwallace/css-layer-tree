@@ -26,6 +26,7 @@ export class LayerTreeNode {
 	}
 
 	add_child(path: string[], name: string, location: Location | undefined): void {
+		// oxlint-disable-next-line typescript/no-this-alias -- Very deliberate choice
 		let current: LayerTreeNode = this
 
 		// Traverse path to find the correct location
