@@ -2,21 +2,27 @@
 	"name": "@projectwallace/css-layer-tree",
 	"version": "2.1.4",
 	"description": "Discover the composition of your CSS @layers in a tree-based format.",
+	"keywords": [
+		"architecture",
+		"composition",
+		"css",
+		"layer",
+		"layers",
+		"stylesheet",
+		"tree"
+	],
+	"homepage": "https://github.com/projectwallace/css-layer-tree",
+	"license": "MIT",
+	"author": {
+		"name": "Bart Veneman"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/projectwallace/css-layer-tree.git"
 	},
-	"author": {
-		"name": "Bart Veneman"
-	},
-	"homepage": "https://github.com/projectwallace/css-layer-tree",
-	"issues": "https://github.com/projectwallace/css-layer-tree/issues",
-	"license": "MIT",
-	"packageManager": "pnpm@10.30.3",
-	"engines": {
-		"node": ">=18.0.0",
-		"pnpm": ">=10.0.0"
-	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"main": "./dist/index.mjs",
 	"types": "./dist/index.d.mts",
@@ -24,49 +30,33 @@
 		"types": "./dist/index.d.mts",
 		"default": "./dist/index.mjs"
 	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
 	"scripts": {
 		"build": "tsdown",
 		"test": "vitest",
 		"check": "tsc --noEmit",
-		"lint": "oxlint"
-	},
-	"devDependencies": {
-		"@codecov/rollup-plugin": "^2.0.1",
-		"oxlint": "^1.51.0",
-		"prettier": "^3.3.3",
-		"publint": "^0.3.18",
-		"tsdown": "^0.22.0",
-		"typescript": "6.0.3",
-		"vitest": "^4.0.0"
-	},
-	"files": [
-		"dist"
-	],
-	"keywords": [
-		"css",
-		"stylesheet",
-		"layer",
-		"layers",
-		"composition",
-		"architecture",
-		"tree"
-	],
-	"prettier": {
-		"semi": false,
-		"useTabs": true,
-		"printWidth": 140,
-		"singleQuote": true
+		"lint": "oxlint && oxfmt --check"
 	},
 	"dependencies": {
 		"@projectwallace/css-parser": "~0.16.0"
 	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
+	"devDependencies": {
+		"@projectwallace/preset-oxlint": "^0.0.11",
+		"oxfmt": "^0.59.0",
+		"oxlint": "^1.74.0",
+		"publint": "^0.3.21",
+		"tsdown": "^0.22.9",
+		"typescript": "7.0.2",
+		"vite": "^8.1.5",
+		"vitest": "^4.1.10"
 	},
-	"publishConfig": {
-		"access": "public",
-		"provenance": true
-	}
+	"engines": {
+		"node": ">=18.0.0",
+		"pnpm": ">=11.0.0"
+	},
+	"packageManager": "pnpm@11.0.0",
+	"issues": "https://github.com/projectwallace/css-layer-tree/issues"
 }
