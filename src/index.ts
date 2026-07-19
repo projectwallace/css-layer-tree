@@ -41,13 +41,13 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 				if (node.has_prelude) {
 					let groups = node.prelude.text.split(',').map((s) => s.trim())
 					if (node.has_block) {
-						// prelude.children contains the individual segments for dotted notation
-						// e.g., @layer base.props {} has children: ["base", "props"]
+						// prelude.children contains one LayerName node per dotted notation,
+						// e.g., @layer base.props {} has a single child with name "base.props"
 						let layer_names: string[] = []
 						if (is_atrule_prelude(node.prelude)) {
 							for (let child of node.prelude.children) {
 								if (is_layer_name(child)) {
-									layer_names.push(child.name)
+									layer_names.push(...get_layer_names(child.name))
 								}
 							}
 						}
@@ -112,7 +112,7 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 					let layer_count = 0
 					for (let child of node.prelude.children) {
 						if (is_layer_name(child)) {
-							layer_count++
+							layer_count += get_layer_names(child.name).length
 						}
 					}
 					// Pop all of them
