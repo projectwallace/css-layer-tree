@@ -1,5 +1,12 @@
 import { LayerTreeNode, type TreeNode, type Location } from './TreeNode.ts'
-import { parse, traverse, is_atrule, type CSSNode, is_layer_name, is_atrule_prelude } from '@projectwallace/css-parser'
+import {
+	parse,
+	traverse,
+	is_atrule,
+	type CSSNode,
+	is_layer_name,
+	is_atrule_prelude,
+} from '@projectwallace/css-parser'
 
 export type { Location, TreeNode } from './TreeNode.ts'
 
@@ -33,22 +40,7 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 			if (node.name === 'layer') {
 				if (node.has_prelude) {
 					let groups = node.prelude.text.split(',').map((s) => s.trim())
-					if (!node.has_block) {
-						for (let name of groups) {
-							let parts = get_layer_names(name)
-							// Ensure all parent layers exist and add them to the tree
-							for (let i = 0; i < parts.length; i++) {
-								let path = parts.slice(0, i)
-								let layer_name = parts[i]
-								if (layer_name) {
-									// Only add location to the final layer in dotted notation
-									// Create a new copy to avoid sharing references
-									let loc = i === parts.length - 1 ? create_location(node) : undefined
-									root.add_child(path, layer_name, loc)
-								}
-							}
-						}
-					} else {
+					if (node.has_block) {
 						// prelude.children contains the individual segments for dotted notation
 						// e.g., @layer base.props {} has children: ["base", "props"]
 						let layer_names: string[] = []
@@ -69,6 +61,21 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 						}
 						// Push all layers to the stack
 						current_stack.push(...layer_names)
+					} else {
+						for (let name of groups) {
+							let parts = get_layer_names(name)
+							// Ensure all parent layers exist and add them to the tree
+							for (let i = 0; i < parts.length; i++) {
+								let path = parts.slice(0, i)
+								let layer_name = parts[i]
+								if (layer_name) {
+									// Only add location to the final layer in dotted notation
+									// Create a new copy to avoid sharing references
+									let loc = i === parts.length - 1 ? create_location(node) : undefined
+									root.add_child(path, layer_name, loc)
+								}
+							}
+						}
 					}
 				} else {
 					let name = get_anonymous_id()
