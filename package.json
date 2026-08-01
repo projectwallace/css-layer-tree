@@ -39,7 +39,8 @@
 		"build": "tsdown",
 		"test": "vitest",
 		"check": "tsc --noEmit",
-		"lint": "oxlint && oxfmt --check"
+		"lint": "oxlint && oxfmt --check",
+		"knip": "knip"
 	},
 	"dependencies": {
 		"@projectwallace/css-parser": "~0.18.2"
