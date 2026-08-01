@@ -4,6 +4,7 @@
 	"description": "Discover the composition of your CSS @layers in a tree-based format.",
 	"keywords": [
 		"architecture",
+		"cascade",
 		"composition",
 		"css",
 		"layer",
@@ -41,16 +42,17 @@
 		"lint": "oxlint && oxfmt --check"
 	},
 	"dependencies": {
-		"@projectwallace/css-parser": "~0.18.1"
+		"@projectwallace/css-parser": "~0.18.2"
 	},
 	"devDependencies": {
 		"@projectwallace/preset-oxlint": "^0.0.11",
+		"knip": "^6.31.0",
 		"oxfmt": "^0.61.0",
 		"oxlint": "^1.74.0",
 		"publint": "^0.3.21",
 		"tsdown": "^0.22.9",
 		"typescript": "7.0.2",
-		"vite": "^8.1.5",
+		"vite": "^8.2.0",
 		"vitest": "^4.1.10"
 	},
 	"engines": {
