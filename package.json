@@ -40,26 +40,27 @@
 		"test": "vitest",
 		"check": "tsc --noEmit",
 		"lint": "oxlint && oxfmt --check",
-		"knip": "knip"
+		"knip": "knip",
+		"precommit": "pnpm test --run && pnpm pnpm lint && pnpm check && pnpm knip"
 	},
 	"dependencies": {
 		"@projectwallace/css-parser": "~0.18.2"
 	},
 	"devDependencies": {
 		"@projectwallace/preset-oxlint": "^0.0.11",
-		"knip": "^6.31.0",
-		"oxfmt": "^0.70.0",
-		"oxlint": "^1.74.0",
-		"publint": "^0.3.21",
-		"tsdown": "^0.23.0",
+		"knip": "^6.42.1",
+		"oxfmt": "^0.74.0",
+		"oxlint": "^1.89.0",
+		"publint": "^0.3.25",
+		"tsdown": "^0.23.1",
 		"typescript": "7.0.2",
-		"vite": "^8.2.0",
-		"vitest": "^5.0.1"
+		"vite": "^8.3.4",
+		"vitest": "^5.0.5"
 	},
 	"engines": {
 		"node": ">=18.0.0",
-		"pnpm": ">=11.0.0"
+		"pnpm": ">=11.16.0"
 	},
-	"packageManager": "pnpm@11.0.0",
+	"packageManager": "pnpm@11.16.0",
 	"issues": "https://github.com/projectwallace/css-layer-tree/issues"
 }
