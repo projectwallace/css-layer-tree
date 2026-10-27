@@ -14,6 +14,19 @@ test('@import url() layer', () => {
 	expect(actual).toEqual(expected)
 })
 
+test('@IMPORT url() layer', () => {
+	let actual = layer_tree('@IMPORT url("foo.css") layer;')
+	let expected = [
+		{
+			name: '__anonymous-1__',
+			is_anonymous: true,
+			locations: [{ line: 1, column: 1, start: 0, end: 29 }],
+			children: [],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
+
 test('@import url() LAYER', () => {
 	let actual = layer_tree('@import url("foo.css") LAYER;')
 	let expected = [

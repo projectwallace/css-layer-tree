@@ -7,6 +7,7 @@ import {
 	is_layer_name,
 	is_atrule_prelude,
 	is_function,
+	str_equals,
 } from '@projectwallace/css-parser'
 
 export type { Location, TreeNode } from './TreeNode.ts'
@@ -38,7 +39,7 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 		enter(node) {
 			if (!is_atrule(node)) return
 
-			if (node.name === 'layer') {
+			if (str_equals('layer', node.name)) {
 				if (node.has_prelude) {
 					let groups = node.prelude.text.split(',').map((s) => s.trim())
 					if (node.has_block) {
@@ -55,7 +56,9 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 						// Add each layer in the hierarchy
 						for (let i = 0; i < layer_names.length; i++) {
 							let layer_name = layer_names[i]
-							if (!layer_name) continue
+							if (!layer_name) {
+								continue
+							}
 							let path = layer_names.slice(0, i)
 							let loc = i === layer_names.length - 1 ? create_location(node) : undefined
 							root.add_child(current_stack.concat(path), layer_name, loc)
@@ -83,12 +86,16 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 					root.add_child(current_stack, name, create_location(node))
 					current_stack.push(name)
 				}
-			} else if (node.name === 'import' && node.has_prelude && is_atrule_prelude(node.prelude)) {
+			} else if (
+				str_equals('import', node.name) &&
+				node.has_prelude &&
+				is_atrule_prelude(node.prelude)
+			) {
 				// @import url("foo.css") layer(test);
 				// OR
 				// @import url("foo.css") layer(test.nested);
 				for (let child of node.prelude.children) {
-					if (is_function(child) && child.name.toLowerCase() === 'layer') {
+					if (is_function(child) && str_equals('layer', child.name)) {
 						// layer(name) is a Function with a LayerName child, layer() has no children
 						let layer = child.first_child
 						let name = layer && is_layer_name(layer) ? layer.name.trim() : ''
@@ -115,7 +122,7 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 		leave(node) {
 			if (!is_atrule(node)) return
 
-			if (node.name === 'layer') {
+			if (str_equals('layer', node.name)) {
 				if (node.has_prelude && node.has_block && is_atrule_prelude(node.prelude)) {
 					// Count how many layer segments we pushed
 					let layer_count = 0
@@ -132,7 +139,7 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 					// pop the anonymous layer
 					current_stack.pop()
 				}
-			} else if (node.name === 'import') {
+			} else if (str_equals('import', node.name)) {
 				// clear the stack, imports can not be nested
 				current_stack.length = 0
 			}
