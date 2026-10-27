@@ -20,7 +20,7 @@ let css = `
 	@layer moreTest {
 		@layer deepTest {}
 	}
-};
+}
 /* anonymous @layer */
 @layer {}
 `
@@ -34,25 +34,30 @@ This example would result in this `tree`:
 ;[
 	{
 		name: '__anonymous-1__',
-		locations: [{ line: 2, column: 3, start: 3, end: 33 }],
+		is_anonymous: true,
+		locations: [{ line: 2, column: 1, start: 1, end: 31 }],
 		children: [],
 	},
 	{
 		name: 'test',
-		locations: [{ line: 3, column: 3, start: 36, end: 72 }],
+		is_anonymous: false,
+		locations: [{ line: 3, column: 1, start: 32, end: 68 }],
 		children: [],
 	},
 	{
 		name: 'anotherTest',
-		locations: [{ line: 4, column: 3, start: 75, end: 148 }],
+		is_anonymous: false,
+		locations: [{ line: 4, column: 1, start: 69, end: 134 }],
 		children: [
 			{
 				name: 'moreTest',
-				locations: [{ line: 5, column: 4, start: 99, end: 144 }],
+				is_anonymous: false,
+				locations: [{ line: 5, column: 2, start: 91, end: 132 }],
 				children: [
 					{
 						name: 'deepTest',
-						locations: [{ line: 6, column: 5, start: 121, end: 139 }],
+						is_anonymous: false,
+						locations: [{ line: 6, column: 3, start: 111, end: 129 }],
 						children: [],
 					},
 				],
@@ -61,7 +66,8 @@ This example would result in this `tree`:
 	},
 	{
 		name: '__anonymous-2__',
-		locations: [{ line: 10, column: 3, start: 176, end: 185 }],
+		is_anonymous: true,
+		locations: [{ line: 10, column: 1, start: 158, end: 167 }],
 		children: [],
 	},
 ]

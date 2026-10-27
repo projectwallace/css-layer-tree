@@ -255,3 +255,87 @@ test('uppercase anonymous @LAYER', () => {
 	]
 	expect(actual).toEqual(expected)
 })
+
+test('comments are not part of layer names in a statement', () => {
+	let actual = layer_tree('@layer /* a */ first, /* b */ second;')
+	let expected = [
+		{
+			name: 'first',
+			is_anonymous: false,
+			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 37 }],
+		},
+		{
+			name: 'second',
+			is_anonymous: false,
+			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 37 }],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
+
+test('comments are not part of layer names in a block', () => {
+	let actual = layer_tree('@layer /* a */ first {}')
+	let expected = [
+		{
+			name: 'first',
+			is_anonymous: false,
+			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 23 }],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
+
+test('layer statement nested in a layer block declares sublayers', () => {
+	let actual = layer_tree('@layer a { @layer b, c; }')
+	let expected = [
+		{
+			name: 'a',
+			is_anonymous: false,
+			locations: [{ line: 1, column: 1, start: 0, end: 25 }],
+			children: [
+				{
+					name: 'b',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 12, start: 11, end: 23 }],
+				},
+				{
+					name: 'c',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 12, start: 11, end: 23 }],
+				},
+			],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
+
+test('whitespace and empty segments in a layer name never end up in the tree', () => {
+	// Invalid CSS: the parser splits these into separate, clean layer names
+	let actual = layer_tree('@layer a . b, c..d;')
+	let loc = { line: 1, column: 1, start: 0, end: 19 }
+	let expected = ['a', 'b', 'c', 'd'].map((name) => ({
+		name,
+		is_anonymous: false,
+		children: [],
+		locations: [loc],
+	}))
+	expect(actual).toEqual(expected)
+})
+
+test('escaped dot is part of the layer name', () => {
+	let actual = layer_tree('@layer a\\.b;')
+	let expected = [
+		{
+			name: 'a\\.b',
+			is_anonymous: false,
+			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 12 }],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
