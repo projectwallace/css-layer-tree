@@ -6,6 +6,7 @@ import {
 	type CSSNode,
 	is_layer_name,
 	is_atrule_prelude,
+	is_function,
 } from '@projectwallace/css-parser'
 
 export type { Location, TreeNode } from './TreeNode.ts'
@@ -87,17 +88,24 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 				// OR
 				// @import url("foo.css") layer(test.nested);
 				for (let child of node.prelude.children) {
-					if (is_layer_name(child)) {
-						if (child.name.trim()) {
-							for (let layer_name of get_layer_names(child.name)) {
+					if (is_function(child) && child.name.toLowerCase() === 'layer') {
+						// layer(name) is a Function with a LayerName child, layer() has no children
+						let layer = child.first_child
+						let name = layer && is_layer_name(layer) ? layer.name.trim() : ''
+						if (name) {
+							for (let layer_name of get_layer_names(name)) {
 								root.add_child(current_stack, layer_name, create_location(node))
 								current_stack.push(layer_name)
 							}
 						} else {
-							// @import url("foo.css") layer;
-							let name = get_anonymous_id()
-							root.add_child([], name, create_location(node))
+							// @import url("foo.css") layer();
+							root.add_child([], get_anonymous_id(), create_location(node))
 						}
+						break
+					}
+					if (is_layer_name(child)) {
+						// @import url("foo.css") layer;
+						root.add_child([], get_anonymous_id(), create_location(node))
 						break
 					}
 				}
