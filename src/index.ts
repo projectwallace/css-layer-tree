@@ -1,9 +1,9 @@
 import { LayerTreeNode, type TreeNode, type Location } from './TreeNode.ts'
 import {
+	type CSSNode,
 	parse,
 	traverse,
 	is_atrule,
-	type CSSNode,
 	is_layer_name,
 	is_atrule_prelude,
 	is_function,
@@ -92,14 +92,15 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 						// layer(name) is a Function with a LayerName child, layer() has no children
 						let layer = child.first_child
 						let name = layer && is_layer_name(layer) ? layer.name.trim() : ''
+						let loc = create_location(node)
 						if (name) {
 							for (let layer_name of get_layer_names(name)) {
-								root.add_child(current_stack, layer_name, create_location(node))
+								root.add_child(current_stack, layer_name, loc)
 								current_stack.push(layer_name)
 							}
 						} else {
 							// @import url("foo.css") layer();
-							root.add_child([], get_anonymous_id(), create_location(node))
+							root.add_child([], get_anonymous_id(), loc)
 						}
 						break
 					}
