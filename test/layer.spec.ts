@@ -209,3 +209,49 @@ test('nested layers with anonymous layers and duplicate names', () => {
 	]
 	expect(actual).toEqual(expected)
 })
+
+test('uppercase @LAYER without body', () => {
+	let actual = layer_tree('@LAYER first;')
+	let expected = [
+		{
+			name: 'first',
+			is_anonymous: false,
+			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 13 }],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
+
+test('uppercase @LAYER with body', () => {
+	let actual = layer_tree('@LAYER first { @LaYeR second {} }')
+	let expected = [
+		{
+			name: 'first',
+			is_anonymous: false,
+			locations: [{ line: 1, column: 1, start: 0, end: 33 }],
+			children: [
+				{
+					name: 'second',
+					is_anonymous: false,
+					children: [],
+					locations: [{ line: 1, column: 16, start: 15, end: 31 }],
+				},
+			],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
+
+test('uppercase anonymous @LAYER', () => {
+	let actual = layer_tree('@LAYER {}')
+	let expected = [
+		{
+			name: '__anonymous-1__',
+			is_anonymous: true,
+			children: [],
+			locations: [{ line: 1, column: 1, start: 0, end: 9 }],
+		},
+	]
+	expect(actual).toEqual(expected)
+})
