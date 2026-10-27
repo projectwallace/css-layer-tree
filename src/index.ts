@@ -25,7 +25,7 @@ export type TreeNode = {
 
 // Walk `path` from `root`, creating missing nodes along the way,
 // and add `location` to the final node only
-export function add_layer(root: TreeNode, path: string[], location?: Location): void {
+function add_layer(root: TreeNode, path: string[], location?: Location): void {
 	let current = root
 
 	for (let name of path) {
