@@ -1,4 +1,3 @@
-import { LayerTreeNode, type TreeNode, type Location } from './TreeNode.ts'
 import {
 	type CSSNode,
 	parse,
@@ -10,10 +9,57 @@ import {
 	str_equals,
 } from '@projectwallace/css-parser'
 
-export type { Location, TreeNode } from './TreeNode.ts'
+export type Location = {
+	line: number
+	column: number
+	start: number
+	end: number
+}
+
+export type TreeNode = {
+	name: string
+	is_anonymous: boolean
+	locations: Location[]
+	children: TreeNode[]
+}
+
+// Walk `path` from `root`, creating missing nodes along the way,
+// and add `location` to the final node only
+function add_layer(root: TreeNode, path: string[], location?: Location): void {
+	let current = root
+
+	for (let name of path) {
+		let child = current.children.find((c) => c.name === name)
+		if (!child) {
+			child = { name, is_anonymous: name.startsWith('__anonymous'), locations: [], children: [] }
+			current.children.push(child)
+		}
+		current = child
+	}
+
+	if (location) {
+		current.locations.push(location)
+	}
+}
+
+// Split on dots, except escaped ones: `a\.b` is a single layer name
+const UNESCAPED_DOT = /(?<!\\)\./
 
 function get_layer_names(name: string): string[] {
-	return name.split('.').map((s) => s.trim())
+	return name.split(UNESCAPED_DOT)
+}
+
+// One entry per comma-separated group, e.g. `@layer a, b.c` -> [['a'], ['b', 'c']]
+function get_prelude_groups(node: CSSNode): string[][] {
+	let groups: string[][] = []
+	if (is_atrule_prelude(node)) {
+		for (let child of node.children) {
+			if (is_layer_name(child)) {
+				groups.push(get_layer_names(child.name))
+			}
+		}
+	}
+	return groups
 }
 
 function create_location(node: CSSNode): Location {
@@ -27,7 +73,9 @@ function create_location(node: CSSNode): Location {
 
 export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 	let current_stack: string[] = []
-	let root = new LayerTreeNode('root')
+	// Stack length at each at-rule's enter, restored on leave
+	let saved_lengths: number[] = []
+	let root: TreeNode = { name: 'root', is_anonymous: false, locations: [], children: [] }
 	let anonymous_counter = 0
 
 	function get_anonymous_id(): string {
@@ -41,52 +89,21 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 				return
 			}
 
+			saved_lengths.push(current_stack.length)
+
 			if (str_equals('layer', node.name)) {
-				if (node.has_prelude) {
-					let groups = node.prelude.text.split(',').map((s) => s.trim())
-					if (node.has_block) {
-						// prelude.children contains one LayerName node per dotted notation,
-						// e.g., @layer base.props {} has a single child with name "base.props"
-						let layer_names: string[] = []
-						if (is_atrule_prelude(node.prelude)) {
-							for (let child of node.prelude.children) {
-								if (is_layer_name(child)) {
-									layer_names.push(...get_layer_names(child.name))
-								}
-							}
-						}
-						// Add each layer in the hierarchy
-						for (let i = 0; i < layer_names.length; i++) {
-							let layer_name = layer_names[i]
-							if (!layer_name) {
-								continue
-							}
-							let path = layer_names.slice(0, i)
-							let loc = i === layer_names.length - 1 ? create_location(node) : undefined
-							root.add_child(current_stack.concat(path), layer_name, loc)
-						}
-						// Push all layers to the stack
-						current_stack.push(...layer_names)
-					} else {
-						for (let name of groups) {
-							let parts = get_layer_names(name)
-							// Ensure all parent layers exist and add them to the tree
-							for (let i = 0; i < parts.length; i++) {
-								let path = parts.slice(0, i)
-								let layer_name = parts[i]
-								if (layer_name) {
-									// Only add location to the final layer in dotted notation
-									// Create a new copy to avoid sharing references
-									let loc = i === parts.length - 1 ? create_location(node) : undefined
-									root.add_child(path, layer_name, loc)
-								}
-							}
-						}
-					}
-				} else {
+				if (!node.has_prelude) {
 					let name = get_anonymous_id()
-					root.add_child(current_stack, name, create_location(node))
 					current_stack.push(name)
+					add_layer(root, current_stack, create_location(node))
+				} else if (node.has_block) {
+					// @layer base.props {} has a single group: ['base', 'props']
+					current_stack.push(...get_prelude_groups(node.prelude).flat())
+					add_layer(root, current_stack, create_location(node))
+				} else {
+					for (let names of get_prelude_groups(node.prelude)) {
+						add_layer(root, current_stack.concat(names), create_location(node))
+					}
 				}
 			} else if (
 				str_equals('import', node.name) &&
@@ -100,57 +117,36 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 					if (is_function(child) && str_equals('layer', child.name)) {
 						// layer(name) is a Function with a LayerName child, layer() has no children
 						let layer = child.first_child
-						let name = layer && is_layer_name(layer) ? layer.name.trim() : ''
+						let names = layer && is_layer_name(layer) ? get_layer_names(layer.name) : []
 						let loc = create_location(node)
-						if (name) {
-							for (let layer_name of get_layer_names(name)) {
-								root.add_child(current_stack, layer_name, loc)
-								current_stack.push(layer_name)
+						if (names.length > 0) {
+							// Every segment gets the location
+							for (let name of names) {
+								current_stack.push(name)
+								add_layer(root, current_stack, loc)
 							}
 						} else {
 							// @import url("foo.css") layer();
-							root.add_child([], get_anonymous_id(), loc)
+							add_layer(root, [get_anonymous_id()], loc)
 						}
 						break
 					}
 					if (is_layer_name(child)) {
 						// @import url("foo.css") layer;
-						root.add_child([], get_anonymous_id(), create_location(node))
+						add_layer(root, [get_anonymous_id()], create_location(node))
 						break
 					}
 				}
 			}
 		},
 		leave(node) {
-			if (!is_atrule(node)) {
-				return
-			}
-
-			if (str_equals('layer', node.name)) {
-				if (node.has_prelude && node.has_block && is_atrule_prelude(node.prelude)) {
-					// Count how many layer segments we pushed
-					let layer_count = 0
-					for (let child of node.prelude.children) {
-						if (is_layer_name(child)) {
-							layer_count += get_layer_names(child.name).length
-						}
-					}
-					// Pop all of them
-					for (let i = 0; i < layer_count; i++) {
-						current_stack.pop()
-					}
-				} else {
-					// pop the anonymous layer
-					current_stack.pop()
-				}
-			} else if (str_equals('import', node.name)) {
-				// clear the stack, imports can not be nested
-				current_stack.length = 0
+			if (is_atrule(node)) {
+				current_stack.length = saved_lengths.pop()!
 			}
 		},
 	})
 
-	return root.to_plain_object().children
+	return root.children
 }
 
 export function layer_tree(css: string): TreeNode[] {
