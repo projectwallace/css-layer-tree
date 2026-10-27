@@ -37,7 +37,9 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 
 	traverse(ast, {
 		enter(node) {
-			if (!is_atrule(node)) return
+			if (!is_atrule(node)) {
+				return
+			}
 
 			if (str_equals('layer', node.name)) {
 				if (node.has_prelude) {
@@ -120,7 +122,9 @@ export function layer_tree_from_ast(ast: CSSNode): TreeNode[] {
 			}
 		},
 		leave(node) {
-			if (!is_atrule(node)) return
+			if (!is_atrule(node)) {
+				return
+			}
 
 			if (str_equals('layer', node.name)) {
 				if (node.has_prelude && node.has_block && is_atrule_prelude(node.prelude)) {
