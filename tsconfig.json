@@ -16,6 +16,8 @@
 		"allowImportingTsExtensions": true,
 		"allowSyntheticDefaultImports": true,
 		"noEmit": true,
+		"declaration": true,
+		"isolatedDeclarations": true,
 
 		"lib": ["ES2022"]
 	},
